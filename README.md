@@ -6,9 +6,12 @@ A verification proxy that validates AI-generated code before it enters your code
 
 - **AST Syntax Validation** — Catches syntax errors using tree-sitter (Python, JavaScript, TypeScript)
 - **Import/Package Verification** — Validates packages against PyPI and npm registries
-- **Method Signature Checking** — Detects wrong parameters and nonexistent methods
+- **Function Signature Validation** — Detects wrong parameters, missing required args, unknown keywords (Jedi + inspect)
 - **Deprecated API Detection** — Flags deprecated patterns with replacement suggestions
-- **Multiple Output Modes** — Rich terminal output or JSON for CI/CD
+- **LLM Output Parsing** — Extract and validate code blocks from markdown responses
+- **Pre-commit Integration** — Git hooks for Python and JavaScript/TypeScript
+- **VS Code Extension** — Real-time diagnostics with configurable trigger modes
+- **Multiple Output Modes** — Rich terminal output, JSON for CI/CD, VS Code diagnostics
 - **REST API Server** — FastAPI-based server for integration with any workflow
 
 ## Quick Start
@@ -20,7 +23,10 @@ pip install -e .
 # Validate a file
 firewall check app.py
 
-# Validate from stdin (pipe from LLM)
+# Validate LLM markdown response
+firewall parse response.md
+
+# Validate from stdin
 echo "import fakelib" | firewall check --stdin -l python
 
 # JSON output for CI/CD
@@ -44,7 +50,7 @@ pip install -e ".[dev]"
 
 ## Usage
 
-### CLI
+### CLI — Code Validation
 
 ```bash
 # Check single file
@@ -58,10 +64,54 @@ cat generated_code.py | firewall check --stdin -l python
 
 # JSON output
 firewall check --format json mycode.py
-
-# Initialize config
-firewall init
 ```
+
+### CLI — LLM Output Parsing
+
+```bash
+# Validate code blocks in markdown file
+firewall parse response.md
+
+# Parse from stdin
+curl https://api.example.com/response | firewall parse --stdin
+
+# Parse from URL
+firewall parse --url https://gist.github.com/my-response.md
+
+# JSON output
+firewall parse --format json response.md
+```
+
+### Pre-commit Hooks
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Add to .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/tranhoangtu/AI-Hallucination-Firewall
+    rev: v0.1.0
+    hooks:
+      - id: firewall-check          # Python files
+      - id: firewall-check-js       # JavaScript/TypeScript files
+
+# Install git hooks
+pre-commit install
+
+# Run manually
+pre-commit run firewall-check --all-files
+```
+
+### VS Code Extension
+
+1. Clone repository and navigate to `vscode-extension/`
+2. Run `npm install && npm run compile`
+3. Open VS Code command palette: `Extensions: Install from VSIX`
+4. Select the built `.vsix` file
+5. Configure in settings:
+   - `hallucinationFirewall.triggerMode`: `onChange` (debounced) or `onSave` (default)
+   - Real-time diagnostics appear in editor and Problem Panel
 
 ### API Server
 
@@ -87,12 +137,14 @@ Create a `.firewall.toml` in your project root:
 languages = ["python", "javascript"]
 severity_threshold = "warning"
 cache_ttl_seconds = 3600
+fail_on_network_error = false      # Block on registry timeout (pre-commit)
 output_format = "terminal"
 
 [firewall.registries]
 pypi_enabled = true
 npm_enabled = true
 timeout_seconds = 10
+max_retries = 2
 ```
 
 ## Validation Pipeline
@@ -106,8 +158,15 @@ Code Input → AST Parsing → Import Check → Signature Validation → Report
 
 1. **Layer 1 — Syntax**: tree-sitter AST parsing catches malformed code
 2. **Layer 2 — Imports**: Verifies packages exist on PyPI/npm registries
-3. **Layer 3 — Signatures**: Validates method calls against real APIs
-4. **Layer 4 — Deprecation**: Flags deprecated patterns with fixes
+3. **Layer 3 — Signatures**: Validates function calls (args, parameters) using Jedi + inspect
+4. **Layer 4 — Deprecation**: Flags deprecated patterns with fixes (future)
+
+**Validation Features:**
+- **Syntax Errors**: Malformed code, invalid Python/JavaScript
+- **Package Validation**: Nonexistent packages on PyPI/npm
+- **Signature Checks**: Missing required args, unknown parameters, wrong arg count
+- **Import Validation**: Invalid or circular imports
+- **LLM Output**: Extract and validate markdown code blocks
 
 ## Development
 
@@ -132,14 +191,17 @@ mypy src/
 
 ```
 src/hallucination_firewall/
-├── cli.py                     # Click CLI entry point
+├── cli.py                     # Click CLI (check, parse commands)
 ├── server.py                  # FastAPI REST server
 ├── config.py                  # Config loader (.firewall.toml)
 ├── models.py                  # Pydantic data models
 ├── pipeline/
 │   ├── runner.py              # Pipeline orchestrator
 │   ├── ast_validator.py       # tree-sitter AST validation
-│   └── import_checker.py      # Package existence verification
+│   ├── import_checker.py      # Package existence verification
+│   └── signature_checker.py   # Function signature validation (NEW)
+├── parsers/
+│   └── llm_output_parser.py   # LLM markdown parsing (NEW)
 ├── registries/
 │   ├── pypi_registry.py       # PyPI API client
 │   ├── npm_registry.py        # npm API client
@@ -149,6 +211,14 @@ src/hallucination_firewall/
 │   └── json_reporter.py       # JSON output for CI/CD
 └── utils/
     └── language_detector.py   # File language detection
+
+vscode-extension/             # VS Code extension (NEW)
+├── src/
+│   ├── extension.ts           # Extension activation
+│   └── diagnostics-mapper.ts  # Issue mapping
+└── package.json
+
+.pre-commit-hooks.yaml        # Pre-commit definitions (NEW)
 ```
 
 ## License

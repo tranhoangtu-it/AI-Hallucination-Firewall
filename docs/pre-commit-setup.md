@@ -63,7 +63,7 @@ pre-commit run firewall-check
 
 ## JavaScript/TypeScript
 
-Add the JS hook:
+Add the JS hook for JavaScript/TypeScript validation:
 
 ```yaml
 repos:
@@ -73,6 +73,25 @@ repos:
       - id: firewall-check
       - id: firewall-check-js
 ```
+
+Both hooks support the same configuration in `.firewall.toml`.
+
+## LLM Output Validation
+
+While pre-commit is designed for file validation, you can separately validate LLM-generated markdown responses:
+
+```bash
+# Validate a markdown file containing code blocks
+firewall parse response.md
+
+# Validate from stdin (e.g., from a curl response)
+curl https://api.openai.com/... | firewall parse --stdin
+
+# Validate from URL
+firewall parse --url https://gist.github.com/your-response.md
+```
+
+The `parse` command extracts code blocks from markdown and validates each block using the standard pipeline.
 
 ## Troubleshooting
 
