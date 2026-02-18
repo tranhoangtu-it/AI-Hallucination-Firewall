@@ -2,9 +2,14 @@
   "name": "hallucination-firewall",
   "displayName": "AI Hallucination Firewall",
   "description": "Real-time validation for AI-generated code — detects hallucinated APIs, wrong signatures, nonexistent packages",
-  "version": "0.1.0",
-  "publisher": "tranhoangtu",
+  "version": "0.2.0",
+  "publisher": "tuth",
+  "icon": "icon.png",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tranhoangtu-it/AI-Hallucination-Firewall.git"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -44,6 +49,7 @@
     }
   },
   "scripts": {
+    "build": "npm run compile",
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./"

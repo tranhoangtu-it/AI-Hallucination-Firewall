@@ -1,5 +1,8 @@
 .vscode/**
 .vscode-test/**
+plans/**
+docs/**
+tests/**
 src/**
 node_modules/**
 tsconfig.json
