@@ -13,6 +13,7 @@ env/
 
 # IDE
 .idea/
+.claude/
 .vscode/
 *.swp
 *.swo
@@ -42,3 +43,5 @@ npm-debug.log
 # Project-specific
 .project-venv/
 plans/
+
+CLAUDE.md
