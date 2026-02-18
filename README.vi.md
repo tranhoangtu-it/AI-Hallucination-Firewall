@@ -5,7 +5,8 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/tranhoangtu-it/AI-Hallucination-Firewall/releases)
-[![Tests](https://img.shields.io/badge/tests-140%20passed-brightgreen.svg)](#phát-triển)
+[![Tests](https://img.shields.io/badge/tests-210%20passed-brightgreen.svg)](#phát-triển)
+[![Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen.svg)](#development)
 [![GitHub Pages](https://img.shields.io/badge/docs-live-blue.svg)](https://tranhoangtu-it.github.io/AI-Hallucination-Firewall/)
 
 <p align="center">
