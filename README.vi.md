@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/tranhoangtu-it/AI-Hallucination-Firewall/releases)
-[![Tests](https://img.shields.io/badge/tests-68%20passed-brightgreen.svg)](#phát-triển)
+[![Tests](https://img.shields.io/badge/tests-140%20passed-brightgreen.svg)](#phát-triển)
 [![GitHub Pages](https://img.shields.io/badge/docs-live-blue.svg)](https://tranhoangtu-it.github.io/AI-Hallucination-Firewall/)
 
 <p align="center">
@@ -23,19 +23,24 @@ Một proxy xác thực code do AI tạo trước khi đưa vào dự án của 
 ## Tính Năng
 
 - 🌳 **Xác thực cú pháp AST** — phân tích tree-sitter phát hiện code lỗi trong Python, JavaScript, TypeScript
-- 📦 **Xác minh Import/Package** — xác thực package với PyPI và npm registries
+- 📦 **Xác minh Import/Package** — xác thực package với PyPI và npm registries, hỗ trợ alias (`import pandas as pd` → `pd.DataFrame()`)
 - 🔍 **Xác thực Chữ ký Hàm** — Jedi + inspect xác thực tham số, tham số bắt buộc và keyword arguments
 - 📄 **Trình phân tích Đầu ra LLM** — trích xuất và xác thực code blocks từ markdown
 - 🪝 **Tích hợp Pre-commit** — Git hooks tự động cho Python và JavaScript/TypeScript
 - 🔌 **Extension VS Code** — chẩn đoán inline thời gian thực với chế độ trigger cấu hình được
+- ⚡ **Kiểm tra Registry song song** — tra cứu PyPI/npm bất đồng bộ đồng thời với semaphore throttling
+- 📊 **Xuất SARIF** — tích hợp GitHub Code Scanning với `--format sarif`
+- 🚦 **CI Quality Gate** — GitHub Actions workflow với lint/type-check/test matrix (Python 3.11-3.13, 80% coverage)
+- 🔒 **Chính sách CI nghiêm ngặt** — cờ `--ci` buộc fail-on-network-error với ngưỡng cảnh báo
+- 📈 **Observability Metrics** — endpoint `/metrics` hiển thị latency, cache hit rate, error count
 
 ## Cách Hoạt Động
 
 ```
 Code Input → AST Parsing → Import Check → Signature Validation → Report
      │           │              │                │                  │
-tree-sitter    PyPI/npm        Jedi         Rich/JSON output
- (syntax)    (packages)     (correctness)
+tree-sitter    PyPI/npm        Jedi         Rich/JSON/SARIF
+ (syntax)   (async parallel) (correctness)
 ```
 
 **Pipeline xác thực 4 lớp:**
@@ -67,6 +72,12 @@ firewall parse response.md
 # Đầu ra JSON cho CI/CD
 firewall check --format json app.py
 
+# Đầu ra SARIF cho GitHub Code Scanning
+firewall check --format sarif app.py
+
+# Chế độ CI nghiêm ngặt (fail khi lỗi mạng, áp dụng ngưỡng cảnh báo)
+firewall check --ci app.py
+
 # Khởi động API server
 firewall serve
 ```
@@ -84,6 +95,12 @@ firewall check src/*.py
 
 # Pipe từ stdin
 cat generated_code.py | firewall check --stdin -l python
+
+# Chế độ CI (fail khi lỗi mạng, áp dụng ngưỡng cảnh báo)
+firewall check --ci src/*.py
+
+# Đầu ra SARIF cho GitHub Code Scanning
+firewall check --format sarif --output results.sarif src/
 ```
 
 ### Pre-commit Hooks
@@ -114,6 +131,9 @@ firewall serve --host 0.0.0.0 --port 8000
 curl -X POST http://localhost:8000/validate \
   -H "Content-Type: application/json" \
   -d '{"code": "import fakelib", "language": "python"}'
+
+# Xem observability metrics
+curl http://localhost:8000/metrics
 ```
 
 ### Cấu Hình
@@ -160,11 +180,13 @@ src/hallucination_firewall/
 ├── server.py                  # FastAPI server
 ├── pipeline/                  # Các lớp xác thực
 ├── parsers/                   # Phân tích đầu ra LLM
-├── registries/                # PyPI/npm clients
-└── reporters/                 # Định dạng đầu ra
+├── registries/                # PyPI/npm clients (async parallel)
+└── reporters/                 # Định dạng đầu ra (JSON/SARIF)
+    └── sarif_reporter.py      # SARIF format reporter
 
 vscode-extension/              # Extension VS Code
 .pre-commit-hooks.yaml         # Định nghĩa pre-commit
+.github/workflows/             # CI quality gate
 ```
 
 ## Dành Cho Ai?

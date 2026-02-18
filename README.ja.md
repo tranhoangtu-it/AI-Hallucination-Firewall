@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/tranhoangtu-it/AI-Hallucination-Firewall/releases)
-[![Tests](https://img.shields.io/badge/tests-68%20passed-brightgreen.svg)](#開発)
+[![Tests](https://img.shields.io/badge/tests-140%20passed-brightgreen.svg)](#開発)
 [![GitHub Pages](https://img.shields.io/badge/docs-live-blue.svg)](https://tranhoangtu-it.github.io/AI-Hallucination-Firewall/)
 
 <p align="center">
@@ -23,19 +23,24 @@ AIが生成したコードをコードベースに入る前に検証する検証
 ## 機能
 
 - 🌳 **AST構文検証** — tree-sitter パーサーが Python、JavaScript、TypeScript の不正なコードを実行前に検出
-- 📦 **インポート検証** — すべてのインポートを PyPI と npm レジストリで検証。幻覚パッケージを即座に検出
+- 📦 **インポート検証** — PyPI と npm レジストリでパッケージを検証、エイリアス解決対応（`import pandas as pd` → `pd.DataFrame()`）
 - 🔍 **署名チェック** — Jedi + inspect が関数パラメータ、必須引数、キーワード引数を実際の API で検証
 - 📄 **LLM出力パーサー** — マークダウンレスポンスからコードブロックを抽出し、各ブロックを独立して検証
 - 🪝 **Pre-commit統合** — Python と JavaScript/TypeScript の自動 Git フック
 - 🔌 **VS Code拡張機能** — リアルタイムインライン診断。保存時または変更時のトリガー設定可能
+- ⚡ **並列レジストリチェック** — semaphoreベースのスロットリングを使用したPyPI/npm非同期並行ルックアップ
+- 📊 **SARIFエクスポート** — `--format sarif`でGitHub Code Scanning統合
+- 🚦 **CI品質ゲート** — lint/type-check/testマトリックス付きGitHub Actionsワークフロー（Python 3.11-3.13、80%カバレッジ）
+- 🔒 **厳格なCIポリシー** — `--ci`フラグでネットワークエラー時の失敗と警告しきい値を強制
+- 📈 **観測性メトリクス** — `/metrics`エンドポイントでレイテンシ、キャッシュヒット率、エラーカウントを公開
 
 ## 仕組み
 
 ```
 Code Input → AST Parsing → Import Check → Signature Validation → Report
      │           │              │                │                  │
-tree-sitter    PyPI/npm        Jedi         Rich/JSON output
- (syntax)    (packages)     (correctness)
+tree-sitter    PyPI/npm        Jedi         Rich/JSON/SARIF
+ (syntax)   (async parallel) (correctness)
 ```
 
 **4層検証パイプライン:**
@@ -67,6 +72,12 @@ firewall parse response.md
 # CI/CD 用の JSON 出力
 firewall check --format json app.py
 
+# GitHub Code Scanning用のSARIF出力
+firewall check --format sarif app.py
+
+# 厳格なCIモード（ネットワークエラー時失敗、警告しきい値適用）
+firewall check --ci app.py
+
 # API サーバーを起動
 firewall serve
 ```
@@ -84,6 +95,12 @@ firewall check src/*.py
 
 # stdin からパイプ
 cat generated_code.py | firewall check --stdin -l python
+
+# CIモード（ネットワークエラー時失敗、警告しきい値適用）
+firewall check --ci src/*.py
+
+# GitHub Code Scanning用のSARIF出力
+firewall check --format sarif --output results.sarif src/
 ```
 
 ### Pre-commitフック
@@ -114,6 +131,9 @@ firewall serve --host 0.0.0.0 --port 8000
 curl -X POST http://localhost:8000/validate \
   -H "Content-Type: application/json" \
   -d '{"code": "import fakelib", "language": "python"}'
+
+# 観測性メトリクスを表示
+curl http://localhost:8000/metrics
 ```
 
 ### 設定
@@ -160,11 +180,13 @@ src/hallucination_firewall/
 ├── server.py                  # FastAPI サーバー
 ├── pipeline/                  # 検証レイヤー
 ├── parsers/                   # LLM 出力パーサー
-├── registries/                # PyPI/npm クライアント
-└── reporters/                 # 出力フォーマット
+├── registries/                # PyPI/npm クライアント（非同期並列）
+└── reporters/                 # 出力フォーマット（JSON/SARIF）
+    └── sarif_reporter.py      # SARIFフォーマットレポーター
 
 vscode-extension/              # VS Code 拡張機能
 .pre-commit-hooks.yaml         # Pre-commit 定義
+.github/workflows/             # CI品質ゲート
 ```
 
 ## 対象者

@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/tranhoangtu-it/AI-Hallucination-Firewall/releases)
-[![Tests](https://img.shields.io/badge/tests-68%20passed-brightgreen.svg)](#development)
+[![Tests](https://img.shields.io/badge/tests-140%20passed-brightgreen.svg)](#development)
 [![GitHub Pages](https://img.shields.io/badge/docs-live-blue.svg)](https://tranhoangtu-it.github.io/AI-Hallucination-Firewall/)
 
 <p align="center">
@@ -23,19 +23,24 @@ A verification proxy that validates AI-generated code before it enters your code
 ## Features
 
 - 🌳 **AST Syntax Validation** — tree-sitter parsing detects malformed code in Python, JavaScript, TypeScript
-- 📦 **Import/Package Verification** — validates packages against PyPI and npm registries
+- 📦 **Import/Package Verification** — validates packages against PyPI and npm registries with import alias resolution (`import pandas as pd` → `pd.DataFrame()`)
 - 🔍 **Function Signature Validation** — Jedi + inspect verifies parameters, required args, keyword arguments
 - 📄 **LLM Output Parsing** — extracts and validates code blocks from markdown responses
 - 🪝 **Pre-commit Integration** — automatic Git hooks for Python and JavaScript/TypeScript
 - 🔌 **VS Code Extension** — real-time inline diagnostics with configurable trigger modes
+- ⚡ **Parallel Registry Checks** — async concurrent PyPI/npm lookups with semaphore-based throttling
+- 📊 **SARIF Export** — GitHub Code Scanning integration with `--format sarif`
+- 🚦 **CI Quality Gate** — GitHub Actions workflow with lint/type-check/test matrix (Python 3.11-3.13, 80% coverage)
+- 🔒 **Strict CI Policy** — `--ci` flag enforces fail-on-network-error with warning thresholds
+- 📈 **Observability Metrics** — `/metrics` endpoint exposes latency, cache hit rate, error count
 
 ## How It Works
 
 ```
 Code Input → AST Parsing → Import Check → Signature Validation → Report
      │           │              │                │                  │
-tree-sitter    PyPI/npm        Jedi         Rich/JSON output
- (syntax)    (packages)     (correctness)
+tree-sitter    PyPI/npm        Jedi         Rich/JSON/SARIF
+ (syntax)   (async parallel) (correctness)
 ```
 
 **4-Layer Validation:**
@@ -67,6 +72,12 @@ firewall parse response.md
 # JSON output for CI/CD
 firewall check --format json app.py
 
+# SARIF output for GitHub Code Scanning
+firewall check --format sarif app.py
+
+# Strict CI mode (fail on network errors, enforce warning threshold)
+firewall check --ci app.py
+
 # Start API server
 firewall serve
 ```
@@ -84,6 +95,12 @@ firewall check src/*.py
 
 # Pipe from stdin
 cat generated_code.py | firewall check --stdin -l python
+
+# CI mode (fail on network errors, enforce warning threshold)
+firewall check --ci src/*.py
+
+# SARIF output for GitHub Code Scanning
+firewall check --format sarif --output results.sarif src/
 ```
 
 ### Pre-commit Hooks
@@ -114,6 +131,9 @@ firewall serve --host 0.0.0.0 --port 8000
 curl -X POST http://localhost:8000/validate \
   -H "Content-Type: application/json" \
   -d '{"code": "import fakelib", "language": "python"}'
+
+# View observability metrics
+curl http://localhost:8000/metrics
 ```
 
 ### Configuration
@@ -160,11 +180,13 @@ src/hallucination_firewall/
 ├── server.py                  # FastAPI server
 ├── pipeline/                  # Validation layers
 ├── parsers/                   # LLM output parsing
-├── registries/                # PyPI/npm clients
-└── reporters/                 # Output formatting
+├── registries/                # PyPI/npm clients (async parallel)
+└── reporters/                 # Output formatting (JSON/SARIF)
+    └── sarif_reporter.py      # SARIF format reporter
 
 vscode-extension/              # VS Code extension
 .pre-commit-hooks.yaml         # Pre-commit definitions
+.github/workflows/             # CI quality gate
 ```
 
 ## Who's This For?

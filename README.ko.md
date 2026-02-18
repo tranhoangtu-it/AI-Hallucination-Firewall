@@ -5,7 +5,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/tranhoangtu-it/AI-Hallucination-Firewall/releases)
-[![Tests](https://img.shields.io/badge/tests-68%20passed-brightgreen.svg)](#개발)
+[![Tests](https://img.shields.io/badge/tests-140%20passed-brightgreen.svg)](#개발)
 [![GitHub Pages](https://img.shields.io/badge/docs-live-blue.svg)](https://tranhoangtu-it.github.io/AI-Hallucination-Firewall/)
 
 <p align="center">
@@ -23,19 +23,24 @@ AI가 생성한 코드를 코드베이스에 적용하기 전에 검증하는 �
 ## 기능
 
 - 🌳 **AST 구문 검증** — tree-sitter 파서가 Python, JavaScript, TypeScript의 잘못된 코드를 실행 전 감지
-- 📦 **Import 검증** — 모든 import를 PyPI 및 npm 레지스트리로 검증. 환각 패키지를 즉시 감지
+- 📦 **Import 검증** — PyPI 및 npm 레지스트리로 패키지 검증, 별칭 해석 지원（`import pandas as pd` → `pd.DataFrame()`）
 - 🔍 **서명 검사** — Jedi + inspect가 함수 매개변수, 필수 인수, 키워드 인수를 실제 API로 검증
 - 📄 **LLM 출력 파서** — 마크다운 응답에서 코드 블록을 추출하고 각 블록을 독립적으로 검증
 - 🪝 **Pre-commit 통합** — Python과 JavaScript/TypeScript용 자동 Git 훅
 - 🔌 **VS Code 확장** — 실시간 인라인 진단. 저장 시 또는 변경 시 트리거 구성 가능
+- ⚡ **병렬 레지스트리 확인** — 세마포어 기반 조절을 사용한 PyPI/npm 비동기 동시 조회
+- 📊 **SARIF 내보내기** — `--format sarif`로 GitHub Code Scanning 통합
+- 🚦 **CI 품질 게이트** — lint/type-check/test 매트릭스가 있는 GitHub Actions 워크플로우（Python 3.11-3.13, 80% 커버리지）
+- 🔒 **엄격한 CI 정책** — `--ci` 플래그로 네트워크 오류 시 실패 및 경고 임계값 강제
+- 📈 **관찰 가능성 메트릭** — `/metrics` 엔드포인트로 지연 시간, 캐시 적중률, 오류 수 노출
 
 ## 작동 방식
 
 ```
 Code Input → AST Parsing → Import Check → Signature Validation → Report
      │           │              │                │                  │
-tree-sitter    PyPI/npm        Jedi         Rich/JSON output
- (syntax)    (packages)     (correctness)
+tree-sitter    PyPI/npm        Jedi         Rich/JSON/SARIF
+ (syntax)   (async parallel) (correctness)
 ```
 
 **4층 검증 파이프라인:**
@@ -67,6 +72,12 @@ firewall parse response.md
 # CI/CD용 JSON 출력
 firewall check --format json app.py
 
+# GitHub Code Scanning용 SARIF 출력
+firewall check --format sarif app.py
+
+# 엄격한 CI 모드（네트워크 오류 시 실패, 경고 임계값 적용）
+firewall check --ci app.py
+
 # API 서버 시작
 firewall serve
 ```
@@ -84,6 +95,12 @@ firewall check src/*.py
 
 # stdin에서 파이프
 cat generated_code.py | firewall check --stdin -l python
+
+# CI 모드（네트워크 오류 시 실패, 경고 임계값 적용）
+firewall check --ci src/*.py
+
+# GitHub Code Scanning용 SARIF 출력
+firewall check --format sarif --output results.sarif src/
 ```
 
 ### Pre-commit 훅
@@ -114,6 +131,9 @@ firewall serve --host 0.0.0.0 --port 8000
 curl -X POST http://localhost:8000/validate \
   -H "Content-Type: application/json" \
   -d '{"code": "import fakelib", "language": "python"}'
+
+# 관찰 가능성 메트릭 보기
+curl http://localhost:8000/metrics
 ```
 
 ### 구성
@@ -160,11 +180,13 @@ src/hallucination_firewall/
 ├── server.py                  # FastAPI 서버
 ├── pipeline/                  # 검증 레이어
 ├── parsers/                   # LLM 출력 파서
-├── registries/                # PyPI/npm 클라이언트
-└── reporters/                 # 출력 포맷팅
+├── registries/                # PyPI/npm 클라이언트（비동기 병렬）
+└── reporters/                 # 출력 포맷팅（JSON/SARIF）
+    └── sarif_reporter.py      # SARIF 포맷 리포터
 
 vscode-extension/              # VS Code 확장
 .pre-commit-hooks.yaml         # Pre-commit 정의
+.github/workflows/             # CI 품질 게이트
 ```
 
 ## 대상 사용자
