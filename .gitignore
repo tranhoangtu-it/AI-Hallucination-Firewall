@@ -41,3 +41,4 @@ npm-debug.log
 
 # Project-specific
 .project-venv/
+plans/
