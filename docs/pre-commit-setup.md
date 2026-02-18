@@ -10,7 +10,7 @@
 2. Add to your `.pre-commit-config.yaml`:
    ```yaml
    repos:
-     - repo: https://github.com/tranhoangtu/AI-Hallucination-Firewall
+     - repo: https://github.com/tranhoangtu-it/AI-Hallucination-Firewall
        rev: v0.1.0
        hooks:
          - id: firewall-check
@@ -67,7 +67,7 @@ Add the JS hook for JavaScript/TypeScript validation:
 
 ```yaml
 repos:
-  - repo: https://github.com/tranhoangtu/AI-Hallucination-Firewall
+  - repo: https://github.com/tranhoangtu-it/AI-Hallucination-Firewall
     rev: v0.1.0
     hooks:
       - id: firewall-check

@@ -1,5 +1,10 @@
 # AI Hallucination Firewall
 
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](https://github.com/tranhoangtu-it/AI-Hallucination-Firewall/releases)
+[![Tests](https://img.shields.io/badge/tests-68%20passed-brightgreen.svg)](#development)
+
 A verification proxy that validates AI-generated code before it enters your codebase. Acts as a **"type checker for AI output"** — detects hallucinated functions, deprecated usage, invalid patterns, wrong signatures, and nonexistent packages.
 
 ## Features
@@ -41,7 +46,7 @@ firewall serve
 Requires Python 3.11+.
 
 ```bash
-git clone https://github.com/tranhoangtu/AI-Hallucination-Firewall.git
+git clone https://github.com/tranhoangtu-it/AI-Hallucination-Firewall.git
 cd AI-Hallucination-Firewall
 python -m venv .venv
 source .venv/bin/activate
@@ -90,7 +95,7 @@ pip install pre-commit
 
 # Add to .pre-commit-config.yaml
 repos:
-  - repo: https://github.com/tranhoangtu/AI-Hallucination-Firewall
+  - repo: https://github.com/tranhoangtu-it/AI-Hallucination-Firewall
     rev: v0.1.0
     hooks:
       - id: firewall-check          # Python files

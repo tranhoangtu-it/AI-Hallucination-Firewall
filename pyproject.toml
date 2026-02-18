@@ -48,7 +48,7 @@ dev = [
 firewall = "hallucination_firewall.cli:main"
 
 [project.urls]
-Repository = "https://github.com/tranhoangtu/AI-Hallucination-Firewall"
+Repository = "https://github.com/tranhoangtu-it/AI-Hallucination-Firewall"
 
 [tool.ruff]
 target-version = "py311"
