@@ -13,8 +13,8 @@ AI Hallucination Firewall is a multi-layer code validation system that detects h
 
 ### Validation Pipeline (4 Layers)
 ```
-Input → Layer 1 (Syntax) → Layer 2 (Imports) → Layer 3 (Signatures) → Output
-         tree-sitter        PyPI/npm registry   Jedi + inspect      Rich/JSON/Diagnostics
+Input → Layer 1 (Syntax) → Layer 2 (Imports) → Layer 3 (Signatures) → Layer 4 (Deprecations) → Output
+         tree-sitter        PyPI/npm registry   Jedi + inspect        13 stdlib rules      Rich/JSON/Diagnostics
 ```
 
 **Layer 1: Syntax Validation**
@@ -30,11 +30,18 @@ Input → Layer 1 (Syntax) → Layer 2 (Imports) → Layer 3 (Signatures) → Ou
 - Detects: Nonexistent packages, invalid imports
 
 **Layer 3: Signature Validation**
-- Module: `pipeline/signature_checker.py` (NEW)
+- Module: `pipeline/signature_checker.py`
 - Method: Jedi code intelligence + inspect fallback
 - Caching: LRU cache (1024 items)
 - Detects: Missing required args, unknown parameters, wrong signatures
 - Scope: Python only, dotted names (e.g., `os.path.join()`)
+
+**Layer 4: Deprecation Detection (NEW)**
+- Module: `pipeline/deprecation_checker.py`
+- Rules: 13 Python stdlib deprecation patterns
+- Examples: `os.popen()` → `subprocess.run()`, `typing.Dict` → `dict`
+- Detects: Outdated patterns with Python version and replacement suggestions
+- Scope: Python only, stdlib functions and typing constructs
 
 ### LLM Output Parsing (NEW)
 - Module: `parsers/llm_output_parser.py`
@@ -81,7 +88,22 @@ Input → Layer 1 (Syntax) → Layer 2 (Imports) → Layer 3 (Signatures) → Ou
 
 ## Key Modules
 
-### pipeline/signature_checker.py (NEW)
+### pipeline/deprecation_checker.py (NEW in v0.2)
+**Purpose:** Detect deprecated Python stdlib patterns with version context and replacements
+
+**Key Features:**
+- 13 static deprecation rules covering os, unittest, typing, imp modules
+- Each rule includes: pattern, replacement, Python version deprecated, severity
+- Examples: `os.popen()` (→ `subprocess.run()`), `typing.Dict` (→ `dict`), `imp.find_module()` (→ `importlib.util.find_spec()`)
+- Async implementation: `check_deprecations(code: str, language: Language) → List[ValidationIssue]`
+- Integrated into Layer 4 of validation pipeline (post-signature checks)
+
+**Design:**
+- Static rule database (no external API calls)
+- Reuses `FunctionCallExtractor` from signature_checker for consistent AST traversal
+- Reports as WARNING severity with exact line numbers
+
+### pipeline/signature_checker.py
 **Purpose:** Extract function calls from AST and validate against real signatures
 
 **Classes:**
@@ -125,18 +147,19 @@ Input → Layer 1 (Syntax) → Layer 2 (Imports) → Layer 3 (Signatures) → Ou
 ## File Structure
 ```
 src/hallucination_firewall/
-├── cli.py                        # Click CLI entry
-├── server.py                     # FastAPI server
+├── cli.py                        # Click CLI entry (+ SSRF validation)
+├── server.py                     # FastAPI server (+ RateLimitMiddleware)
 ├── config.py                     # Config loader
 ├── models.py                     # Pydantic models
 ├── pipeline/
-│   ├── runner.py                 # Pipeline orchestrator
+│   ├── runner.py                 # Pipeline orchestrator (4-layer + error handling)
 │   ├── ast_validator.py          # Syntax validation
 │   ├── import_checker.py         # Package checks
-│   └── signature_checker.py      # Signature validation (NEW)
+│   ├── signature_checker.py      # Signature validation
+│   └── deprecation_checker.py    # Deprecation detection (NEW in v0.2)
 ├── parsers/
 │   ├── __init__.py
-│   └── llm_output_parser.py      # LLM markdown parsing (NEW)
+│   └── llm_output_parser.py      # LLM markdown parsing
 ├── registries/
 │   ├── pypi_registry.py
 │   ├── npm_registry.py
@@ -214,7 +237,9 @@ curl -X POST http://localhost:8000/validate \
 ## Testing
 - Framework: pytest + pytest-asyncio
 - Location: `tests/`
-- Target: >80% coverage
+- Test Files: 13 (ast_validator, cache, cli, config, deprecation_checker, import_checker, language_detector, llm_output_parser, models, reporters, runner, server, signature_checker)
+- Test Count: 132 tests
+- Coverage: 87% (v0.1: 60%)
 - Approach: No network calls (mock registries)
 
 ## Design Decisions
@@ -227,8 +252,16 @@ curl -X POST http://localhost:8000/validate \
 6. **Language Heuristics:** LLM parser detects language from content when fence tag missing
 7. **Pluggable Reporters:** Easy to add new output formats (e.g., SARIF)
 
-## Recent Additions (v0.1.0)
+## Recent Additions
 
+### v0.2 (Current)
+- **Deprecation Checker:** Layer 4 with 13 Python stdlib deprecation rules
+- **SSRF Prevention:** URL validation in cli.py blocks private IPs and file:// scheme
+- **Rate Limiting:** RateLimitMiddleware in server.py (60 req/60s per IP, sliding window)
+- **Bug Fixes:** Removed dead `_cached_lookup` code, improved error messages in runner.py, cleaned up unused config fields
+- **Test Coverage:** 64 new tests, coverage increased to 87% (from 60% in v0.1)
+
+### v0.1.0
 - **Signature Checker:** Layer 3 validation with Jedi + inspect
 - **LLM Output Parser:** Extract and validate code blocks from markdown
 - **Pre-commit Hooks:** Integration with git pre-commit framework

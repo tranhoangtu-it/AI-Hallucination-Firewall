@@ -5,8 +5,6 @@ from __future__ import annotations
 import inspect
 import logging
 from dataclasses import dataclass, field
-from functools import lru_cache
-
 import jedi
 import tree_sitter_python as tspython
 from tree_sitter import Language, Parser
@@ -136,12 +134,6 @@ class FunctionCallExtractor:
 
 class SignatureLookup:
     """Look up function signatures using Jedi + inspect fallback."""
-
-    @staticmethod
-    @lru_cache(maxsize=1024)
-    def _cached_lookup(func_name: str, code_hash: int, line: int) -> SignatureInfo | None:
-        """Cached signature lookup (code_hash used for cache key)."""
-        return None  # Placeholder — real logic below
 
     def get_signature(self, func_name: str, code: str, line: int) -> SignatureInfo | None:
         """Get signature for function at given location in code."""

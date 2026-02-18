@@ -111,7 +111,6 @@ class FirewallConfig(BaseModel):
     cache_dir: Path = Path.home() / ".cache" / "hallucination-firewall"
     registries: RegistryConfig = Field(default_factory=lambda: RegistryConfig())
     fail_on_network_error: bool = False
-    custom_rules: list[str] = []
     output_format: str = "terminal"
 
 
@@ -121,4 +120,3 @@ class RegistryConfig(BaseModel):
     pypi_enabled: bool = True
     npm_enabled: bool = True
     timeout_seconds: int = 10
-    max_retries: int = 2

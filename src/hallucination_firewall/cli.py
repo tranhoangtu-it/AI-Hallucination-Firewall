@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import re
 import sys
 from pathlib import Path
+from urllib.parse import urlparse
 
 import click
 from rich.console import Console
@@ -15,6 +17,14 @@ from .reporters.json_reporter import print_json
 from .reporters.terminal_reporter import print_result, print_summary
 
 console = Console()
+
+_BLOCKED_HOSTS = re.compile(
+    r"^(localhost|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|"
+    r"172\.(1[6-9]|2\d|3[01])\.\d+\.\d+|"
+    r"192\.168\.\d+\.\d+|169\.254\.\d+\.\d+|"
+    r"\[?::1\]?|0\.0\.0\.0)$",
+    re.IGNORECASE,
+)
 
 
 @click.group()
@@ -92,6 +102,17 @@ def parse(
         sys.exit(1)
 
 
+def _validate_url(url: str) -> str:
+    """Validate URL is safe for fetching (prevent SSRF)."""
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise click.BadParameter(f"Unsupported URL scheme: {parsed.scheme}")
+    hostname = parsed.hostname or ""
+    if _BLOCKED_HOSTS.match(hostname):
+        raise click.BadParameter(f"Blocked host: {hostname}")
+    return url
+
+
 def _read_parse_input(file: str | None, use_stdin: bool, url: str | None) -> str:
     """Read markdown from file, stdin, or URL."""
     if use_stdin:
@@ -99,7 +120,8 @@ def _read_parse_input(file: str | None, use_stdin: bool, url: str | None) -> str
     if url:
         import httpx
 
-        resp = httpx.get(url, timeout=10, follow_redirects=True)
+        validated_url = _validate_url(url)
+        resp = httpx.get(validated_url, timeout=10, follow_redirects=False)
         resp.raise_for_status()
         return resp.text
     if file:

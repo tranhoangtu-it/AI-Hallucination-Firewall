@@ -69,4 +69,3 @@ def test_firewall_config_defaults():
 def test_registry_config_defaults():
     config = RegistryConfig()
     assert config.timeout_seconds == 10
-    assert config.max_retries == 2

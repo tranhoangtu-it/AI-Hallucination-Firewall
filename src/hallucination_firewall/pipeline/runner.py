@@ -8,7 +8,11 @@ from pathlib import Path
 from ..config import load_config
 from ..models import (
     FirewallConfig,
+    IssueType,
     Language,
+    Severity,
+    SourceLocation,
+    ValidationIssue,
     ValidationResult,
 )
 from ..registries.cache import RegistryCache
@@ -16,6 +20,7 @@ from ..registries.npm_registry import NpmRegistry
 from ..registries.pypi_registry import PyPIRegistry
 from ..utils.language_detector import detect_language
 from .ast_validator import extract_imports, validate_syntax
+from .deprecation_checker import check_deprecations
 from .import_checker import check_js_imports, check_python_imports
 from .signature_checker import check_signatures
 
@@ -69,6 +74,11 @@ class ValidationPipeline:
             signature_issues = await check_signatures(code, language, file_path)
             result.issues.extend(signature_issues)
 
+        # Layer 4: Deprecation detection
+        if language == Language.PYTHON:
+            deprecation_issues = await check_deprecations(code, language, file_path)
+            result.issues.extend(deprecation_issues)
+
         result.passed = result.error_count == 0
         return result
 
@@ -81,19 +91,35 @@ class ValidationPipeline:
                 language="unknown",
                 checked_at=datetime.now(timezone.utc).isoformat(),
                 passed=False,
-                issues=[],
+                issues=[
+                    ValidationIssue(
+                        severity=Severity.ERROR,
+                        issue_type=IssueType.SYNTAX_ERROR,
+                        location=SourceLocation(file=file_path, line=0),
+                        message=f"File exceeds maximum size ({MAX_FILE_SIZE // (1024*1024)} MB)",
+                        source="runner",
+                    ),
+                ],
             )
 
         try:
             with open(file_path, encoding="utf-8") as f:
                 code = f.read()
-        except (UnicodeDecodeError, ValueError):
+        except (UnicodeDecodeError, ValueError) as exc:
             return ValidationResult(
                 file=file_path,
                 language="unknown",
                 checked_at=datetime.now(timezone.utc).isoformat(),
                 passed=False,
-                issues=[],
+                issues=[
+                    ValidationIssue(
+                        severity=Severity.ERROR,
+                        issue_type=IssueType.SYNTAX_ERROR,
+                        location=SourceLocation(file=file_path, line=0),
+                        message=f"Cannot decode file: {exc}",
+                        source="runner",
+                    ),
+                ],
             )
         return await self.validate_code(code, file_path)
 

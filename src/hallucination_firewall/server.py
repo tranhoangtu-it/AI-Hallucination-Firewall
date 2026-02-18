@@ -3,17 +3,52 @@
 from __future__ import annotations
 
 import logging
+import time
+from collections import defaultdict
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from .config import load_config
 from .models import ValidationResult
 from .pipeline.runner import ValidationPipeline
 
 logger = logging.getLogger(__name__)
+
+RATE_LIMIT = 60  # requests per window
+RATE_WINDOW = 60  # seconds
+
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    """Simple per-IP sliding-window rate limiter."""
+
+    def __init__(self, app, limit: int = RATE_LIMIT, window: int = RATE_WINDOW):
+        super().__init__(app)
+        self.limit = limit
+        self.window = window
+        self._requests: dict[str, list[float]] = defaultdict(list)
+
+    async def dispatch(self, request: Request, call_next):
+        client_ip = request.client.host if request.client else "unknown"
+        now = time.time()
+        # Prune old timestamps
+        recent = [t for t in self._requests[client_ip] if now - t < self.window]
+        if not recent:
+            self._requests.pop(client_ip, None)
+            recent = []
+        else:
+            self._requests[client_ip] = recent
+        if len(recent) >= self.limit:
+            return JSONResponse(
+                {"detail": "Rate limit exceeded"}, status_code=429
+            )
+        self._requests[client_ip].append(now)
+        return await call_next(request)
 
 pipeline: ValidationPipeline | None = None
 
@@ -37,6 +72,8 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+app.add_middleware(RateLimitMiddleware)
 
 
 class ValidateRequest(BaseModel):
