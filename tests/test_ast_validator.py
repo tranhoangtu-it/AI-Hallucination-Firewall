@@ -1,7 +1,12 @@
 """Tests for AST validation and import extraction."""
 
-from hallucination_firewall.models import Language, IssueType
-from hallucination_firewall.pipeline.ast_validator import validate_syntax, extract_imports, extract_import_aliases
+
+from hallucination_firewall.models import IssueType, Language
+from hallucination_firewall.pipeline.ast_validator import (
+    extract_import_aliases,
+    extract_imports,
+    validate_syntax,
+)
 
 
 def test_valid_python_syntax():
@@ -99,3 +104,49 @@ def test_extract_import_alias_non_python():
     code = 'import React from "react";\n'
     aliases = extract_import_aliases(code, Language.JAVASCRIPT)
     assert len(aliases) == 0
+
+
+# --- Exception path tests ---
+
+
+def test_validate_syntax_exception(monkeypatch):
+    """validate_syntax returns [] when tree-sitter crashes."""
+    monkeypatch.setattr(
+        "hallucination_firewall.pipeline.ast_validator.Parser",
+        lambda *a: (_ for _ in ()).throw(RuntimeError("crash")),
+    )
+    result = validate_syntax("code", Language.PYTHON, "test.py")
+    assert result == []
+
+
+def test_extract_imports_exception(monkeypatch):
+    """extract_imports returns [] when parsing fails."""
+    monkeypatch.setattr(
+        "hallucination_firewall.pipeline.ast_validator.Parser",
+        lambda *a: (_ for _ in ()).throw(RuntimeError("crash")),
+    )
+    result = extract_imports("code", Language.PYTHON)
+    assert result == []
+
+
+def test_extract_import_aliases_exception(monkeypatch):
+    """extract_import_aliases returns {} when parsing fails."""
+    monkeypatch.setattr(
+        "hallucination_firewall.pipeline.ast_validator.Parser",
+        lambda *a: (_ for _ in ()).throw(RuntimeError("crash")),
+    )
+    result = extract_import_aliases("import pandas", Language.PYTHON)
+    assert result == {}
+
+
+def test_extract_imports_scoped_package():
+    """Scoped npm packages like @babel/core are extracted."""
+    code = 'import { foo } from "@babel/core";'
+    result = extract_imports(code, Language.JAVASCRIPT)
+    assert "@babel/core" in result
+
+
+def test_extract_import_aliases_unknown_language():
+    """UNKNOWN language returns empty dict."""
+    result = extract_import_aliases("code", Language.UNKNOWN)
+    assert result == {}

@@ -10,7 +10,6 @@ from hallucination_firewall.parsers.llm_output_parser import (
     validate_llm_output,
 )
 
-
 SAMPLE_MARKDOWN = """Here's the implementation:
 
 ```python
@@ -160,3 +159,15 @@ class TestValidateLlmOutput:
         huge = "x" * (11 * 1024 * 1024)  # >10MB
         report = await validate_llm_output(huge)
         assert report.total_blocks == 0
+
+
+class TestMaxBlocksLimit:
+    def test_extract_max_blocks_limit(self) -> None:
+        """MAX_BLOCKS (100) limits extraction even with more blocks."""
+        blocks_md = "\n\n".join(
+            f"```python\nprint({i})\n```" for i in range(105)
+        )
+        blocks = extract_code_blocks(blocks_md)
+        assert len(blocks) == 100
+        assert "print(0)" in blocks[0].code
+        assert "print(99)" in blocks[99].code

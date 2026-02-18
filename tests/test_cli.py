@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 import pytest
 from click.testing import CliRunner
 
@@ -107,3 +109,70 @@ class TestServeCommand:
         result = runner.invoke(main, ["serve", "--help"])
         assert result.exit_code == 0
         assert "host" in result.output.lower()
+
+    def test_serve_runs_uvicorn(self, runner, monkeypatch):
+        mock_run = MagicMock()
+        monkeypatch.setattr("uvicorn.run", mock_run)
+        result = runner.invoke(main, ["serve", "--host", "0.0.0.0", "--port", "9000"])
+        assert result.exit_code == 0
+        mock_run.assert_called_once()
+        call_kwargs = mock_run.call_args
+        assert call_kwargs.kwargs.get("host") or call_kwargs[1].get("host") == "0.0.0.0"
+
+
+class TestCheckSarifFormat:
+    def test_check_format_sarif(self, runner, tmp_path):
+        f = tmp_path / "bad.py"
+        f.write_text("def foo(\n")
+        result = runner.invoke(main, ["check", str(f), "--format", "sarif"])
+        # Syntax error → exit 1; SARIF output goes to sys.stdout directly
+        assert result.exit_code == 1
+
+    def test_check_format_sarif_valid(self, runner, tmp_path):
+        f = tmp_path / "ok.py"
+        f.write_text("x = 1\n")
+        result = runner.invoke(main, ["check", str(f), "--format", "sarif"])
+        assert result.exit_code == 0
+
+    def test_check_multiple_files_summary(self, runner, tmp_path):
+        f1 = tmp_path / "a.py"
+        f2 = tmp_path / "b.py"
+        f1.write_text("x = 1\n")
+        f2.write_text("y = 2\n")
+        result = runner.invoke(main, ["check", str(f1), str(f2)])
+        assert result.exit_code == 0
+
+
+class TestCheckCiMode:
+    def test_check_ci_flag(self, runner, tmp_path):
+        f = tmp_path / "valid.py"
+        f.write_text("x = 1\nprint(x)\n")
+        result = runner.invoke(main, ["check", str(f), "--ci"])
+        # Valid code should still pass even in CI mode
+        assert result.exit_code == 0
+
+
+class TestParseExtended:
+    def test_parse_format_json(self, runner, tmp_path):
+        md = tmp_path / "response.md"
+        md.write_text("```python\nimport os\n```\n")
+        result = runner.invoke(main, ["parse", str(md), "--format", "json"])
+        assert result.exit_code == 0
+
+    def test_parse_stdin(self, runner):
+        result = runner.invoke(main, ["parse", "--stdin"], input="```python\nimport os\n```\n")
+        assert result.exit_code == 0
+
+    def test_parse_failed_blocks_exit_1(self, runner, tmp_path):
+        md = tmp_path / "bad.md"
+        md.write_text("```python\ndef foo(\n```\n")
+        result = runner.invoke(main, ["parse", str(md)])
+        assert result.exit_code == 1
+
+    def test_parse_url_fetch(self, runner, monkeypatch):
+        mock_response = MagicMock()
+        mock_response.text = "```python\nimport os\n```\n"
+        mock_response.raise_for_status = MagicMock()
+        monkeypatch.setattr("httpx.get", MagicMock(return_value=mock_response))
+        result = runner.invoke(main, ["parse", "--url", "https://example.com/code.md"])
+        assert result.exit_code == 0

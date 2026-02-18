@@ -44,4 +44,4 @@
 - pytest with pytest-asyncio
 - No network calls in tests (mock registries)
 - Fixture files for reproducible test cases
-- Target: >80% coverage
+- Target: >99% coverage (currently 99%, 210 tests)

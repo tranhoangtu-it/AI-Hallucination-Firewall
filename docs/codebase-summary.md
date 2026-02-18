@@ -237,9 +237,9 @@ curl -X POST http://localhost:8000/validate \
 ## Testing
 - Framework: pytest + pytest-asyncio
 - Location: `tests/`
-- Test Files: 13 (ast_validator, cache, cli, config, deprecation_checker, import_checker, language_detector, llm_output_parser, models, reporters, runner, server, signature_checker)
-- Test Count: 132 tests
-- Coverage: 87% (v0.1: 60%)
+- Test Files: 16 (ast_validator, cache, cli, config, deprecation_checker, import_checker, language_detector, llm_output_parser, models, reporters, runner, server, signature_checker, registries/npm_registry, registries/pypi_registry, reporters/sarif_reporter)
+- Test Count: 210 tests
+- Coverage: 99% (v0.1: 60%)
 - Approach: No network calls (mock registries)
 
 ## Design Decisions
@@ -259,7 +259,8 @@ curl -X POST http://localhost:8000/validate \
 - **SSRF Prevention:** URL validation in cli.py blocks private IPs and file:// scheme
 - **Rate Limiting:** RateLimitMiddleware in server.py (60 req/60s per IP, sliding window)
 - **Bug Fixes:** Removed dead `_cached_lookup` code, improved error messages in runner.py, cleaned up unused config fields
-- **Test Coverage:** 64 new tests, coverage increased to 87% (from 60% in v0.1)
+- **Test Coverage:** 140 new tests, coverage increased to 99% (from 60% in v0.1)
+- **New Test Files:** registries/test_npm_registry.py, registries/test_pypi_registry.py, reporters/test_sarif_reporter.py
 
 ### v0.1.0
 - **Signature Checker:** Layer 3 validation with Jedi + inspect

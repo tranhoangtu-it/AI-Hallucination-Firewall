@@ -72,6 +72,16 @@ class TestValidateFile:
         assert result.language == "python"
 
 
+class TestCiMode:
+    def test_ci_mode_overrides_config(self):
+        from hallucination_firewall.models import FirewallConfig
+
+        config = FirewallConfig(ci_mode=True)
+        p = ValidationPipeline(config)
+        assert p.config.fail_on_network_error is True
+        assert p.config.severity_threshold == Severity.WARNING
+
+
 class TestPipelineLifecycle:
     @pytest.mark.asyncio
     async def test_close_no_error(self, pipeline):

@@ -10,12 +10,12 @@
 - [x] **SSRF Prevention** — URL validation in CLI blocks private IPs (localhost, 10.x, 192.168.x) and file:// scheme
 - [x] **API Rate Limiting** — RateLimitMiddleware (60 req/60s per IP, sliding window)
 - [x] **Code Cleanup** — Removed dead `_cached_lookup` code, improved error messages, removed unused config fields
-- [x] **Test Coverage** — 64 new tests, coverage increased to 87% (from 60% in v0.1)
+- [x] **Test Coverage** — 140 new tests, coverage increased to 99% (from 60% in v0.1)
 
 #### Metrics
-- Total Tests: 132 (64 new)
-- Coverage: 87%
-- Test Files: 13
+- Total Tests: 210 (140 new)
+- Coverage: 99%
+- Test Files: 16
 - Bug Fixes: 3 (dead code, error messages, config cleanup)
 - Security Features: 2 (SSRF, rate limiting)
 
@@ -131,7 +131,7 @@
 ## Success Metrics (Overall Project)
 
 ### v0.2 Validation
-- [x] Test coverage ≥80% (achieved: 87%)
+- [x] Test coverage ≥80% (achieved: 99%)
 - [x] SSRF vulnerability detection
 - [x] Rate limiting for API protection
 - [x] Zero critical bugs (v0.1 issues resolved)

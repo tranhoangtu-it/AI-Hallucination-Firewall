@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 from hallucination_firewall.models import IssueType, Severity
 from hallucination_firewall.pipeline.import_checker import (
