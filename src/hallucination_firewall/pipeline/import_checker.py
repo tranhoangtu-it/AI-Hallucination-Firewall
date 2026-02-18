@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import importlib.util
 import sys
 
@@ -13,6 +14,9 @@ from ..models import (
 )
 from ..registries.npm_registry import NpmRegistry
 from ..registries.pypi_registry import PyPIRegistry
+
+# Maximum concurrent registry checks
+MAX_CONCURRENT_CHECKS = 10
 
 # Python stdlib modules — skip checking these
 PYTHON_STDLIB = frozenset(sys.stdlib_module_names)
@@ -33,32 +37,35 @@ async def check_python_imports(
     pypi: PyPIRegistry,
 ) -> list[ValidationIssue]:
     """Check Python imports against stdlib, local install, and PyPI."""
-    issues: list[ValidationIssue] = []
+    sem = asyncio.Semaphore(MAX_CONCURRENT_CHECKS)
 
-    for package_name in imports:
+    async def _check_one(package_name: str) -> ValidationIssue | None:
         if package_name in PYTHON_STDLIB:
-            continue
+            return None
 
         # Check if installed locally
         if importlib.util.find_spec(package_name) is not None:
-            continue
+            return None
 
-        # Check PyPI
-        exists = await pypi.package_exists(_normalize_pypi_name(package_name))
+        # Check PyPI with semaphore
+        async with sem:
+            exists = await pypi.package_exists(_normalize_pypi_name(package_name))
+
         if not exists:
-            issues.append(
-                ValidationIssue(
-                    severity=Severity.ERROR,
-                    issue_type=IssueType.NONEXISTENT_PACKAGE,
-                    location=SourceLocation(file=file_path, line=0),
-                    message=f"Package '{package_name}' not found on PyPI or locally",
-                    suggestion="Check spelling. Similar packages may exist.",
-                    confidence=0.9,
-                    source="PyPI registry",
-                )
+            return ValidationIssue(
+                severity=Severity.ERROR,
+                issue_type=IssueType.NONEXISTENT_PACKAGE,
+                location=SourceLocation(file=file_path, line=0),
+                message=f"Package '{package_name}' not found on PyPI or locally",
+                suggestion="Check spelling. Similar packages may exist.",
+                confidence=0.9,
+                source="PyPI registry",
             )
+        return None
 
-    return issues
+    tasks = [_check_one(pkg) for pkg in imports]
+    results = await asyncio.gather(*tasks)
+    return [issue for issue in results if issue is not None]
 
 
 async def check_js_imports(
@@ -67,29 +74,32 @@ async def check_js_imports(
     npm: NpmRegistry,
 ) -> list[ValidationIssue]:
     """Check JavaScript/TypeScript imports against Node.js builtins and npm."""
-    issues: list[ValidationIssue] = []
+    sem = asyncio.Semaphore(MAX_CONCURRENT_CHECKS)
 
-    for package_name in imports:
+    async def _check_one(package_name: str) -> ValidationIssue | None:
         # Skip Node.js builtins (with or without node: prefix)
         clean_name = package_name.removeprefix("node:")
         if clean_name in JS_BUILTINS:
-            continue
+            return None
 
-        exists = await npm.package_exists(package_name)
+        async with sem:
+            exists = await npm.package_exists(package_name)
+
         if not exists:
-            issues.append(
-                ValidationIssue(
-                    severity=Severity.ERROR,
-                    issue_type=IssueType.NONEXISTENT_PACKAGE,
-                    location=SourceLocation(file=file_path, line=0),
-                    message=f"Package '{package_name}' not found on npm",
-                    suggestion="Check spelling or verify the package name.",
-                    confidence=0.9,
-                    source="npm registry",
-                )
+            return ValidationIssue(
+                severity=Severity.ERROR,
+                issue_type=IssueType.NONEXISTENT_PACKAGE,
+                location=SourceLocation(file=file_path, line=0),
+                message=f"Package '{package_name}' not found on npm",
+                suggestion="Check spelling or verify the package name.",
+                confidence=0.9,
+                source="npm registry",
             )
+        return None
 
-    return issues
+    tasks = [_check_one(pkg) for pkg in imports]
+    results = await asyncio.gather(*tasks)
+    return [issue for issue in results if issue is not None]
 
 
 def _normalize_pypi_name(name: str) -> str:

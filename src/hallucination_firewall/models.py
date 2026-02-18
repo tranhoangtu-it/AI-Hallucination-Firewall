@@ -112,6 +112,7 @@ class FirewallConfig(BaseModel):
     registries: RegistryConfig = Field(default_factory=lambda: RegistryConfig())
     fail_on_network_error: bool = False
     output_format: str = "terminal"
+    ci_mode: bool = False
 
 
 class RegistryConfig(BaseModel):

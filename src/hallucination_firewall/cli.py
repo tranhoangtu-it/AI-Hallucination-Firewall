@@ -12,8 +12,10 @@ import click
 from rich.console import Console
 
 from .config import load_config
+from .models import ValidationResult
 from .pipeline.runner import ValidationPipeline
 from .reporters.json_reporter import print_json
+from .reporters.sarif_reporter import print_sarif
 from .reporters.terminal_reporter import print_result, print_summary
 
 console = Console()
@@ -38,22 +40,31 @@ def main() -> None:
 @click.option("--stdin", is_flag=True, help="Read code from stdin")
 @click.option(
     "--format", "output_format",
-    type=click.Choice(["terminal", "json"]), default="terminal",
+    type=click.Choice(["terminal", "json", "sarif"]), default="terminal",
 )
 @click.option(
     "--language", "-l",
     type=click.Choice(["python", "javascript", "typescript"]), default=None,
 )
-def check(files: tuple[str, ...], stdin: bool, output_format: str, language: str | None) -> None:
+@click.option("--ci", is_flag=True, help="Enable strict CI policy mode (fail on warnings)")
+def check(
+    files: tuple[str, ...],
+    stdin: bool,
+    output_format: str,
+    language: str | None,
+    ci: bool,
+) -> None:
     """Validate code files for hallucinated APIs, wrong signatures, and more."""
     if not files and not stdin:
         console.print("[red]Error:[/] Provide file paths or use --stdin")
         sys.exit(1)
 
-    results = asyncio.run(_run_check(files, stdin, language))
+    results = asyncio.run(_run_check(files, stdin, language, ci))
 
     if output_format == "json":
         print_json(results)
+    elif output_format == "sarif":
+        print_sarif(results)
     else:
         for result in results:
             print_result(result, console)
@@ -170,12 +181,15 @@ async def _run_check(
     files: tuple[str, ...],
     stdin: bool,
     language: str | None,
-) -> list:
+    ci: bool = False,
+) -> list[ValidationResult]:
     """Run validation pipeline on files or stdin."""
     config = load_config()
+    if ci:
+        config.ci_mode = True
     pipeline = ValidationPipeline(config)
 
-    results = []
+    results: list[ValidationResult] = []
     try:
         if stdin:
             code = sys.stdin.read()

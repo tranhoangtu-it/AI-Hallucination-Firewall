@@ -1,7 +1,7 @@
 """Tests for AST validation and import extraction."""
 
 from hallucination_firewall.models import Language, IssueType
-from hallucination_firewall.pipeline.ast_validator import validate_syntax, extract_imports
+from hallucination_firewall.pipeline.ast_validator import validate_syntax, extract_imports, extract_import_aliases
 
 
 def test_valid_python_syntax():
@@ -55,3 +55,47 @@ def test_extract_js_relative_imports_skipped():
     imports = extract_imports(code, Language.JAVASCRIPT)
     # Relative imports should not be in the list
     assert all(not i.startswith(".") for i in imports)
+
+
+def test_extract_import_alias_simple():
+    """Test simple import alias extraction: import X as Y."""
+    code = "import pandas as pd\nimport numpy as np\n"
+    aliases = extract_import_aliases(code, Language.PYTHON)
+    assert aliases["pd"] == "pandas"
+    assert aliases["np"] == "numpy"
+
+
+def test_extract_import_alias_from_import():
+    """Test alias from 'from X import Y as Z'."""
+    code = "from matplotlib import pyplot as plt\n"
+    aliases = extract_import_aliases(code, Language.PYTHON)
+    assert aliases["plt"] == "matplotlib.pyplot"
+
+
+def test_extract_import_alias_mixed():
+    """Test extraction with both import styles."""
+    code = """
+import pandas as pd
+from sklearn.model_selection import train_test_split as tts
+import numpy as np
+from os import path as ospath
+"""
+    aliases = extract_import_aliases(code, Language.PYTHON)
+    assert aliases["pd"] == "pandas"
+    assert aliases["np"] == "numpy"
+    assert aliases["tts"] == "sklearn.model_selection.train_test_split"
+    assert aliases["ospath"] == "os.path"
+
+
+def test_extract_import_alias_no_aliases():
+    """Test code with no import aliases."""
+    code = "import os\nimport json\nfrom pathlib import Path\n"
+    aliases = extract_import_aliases(code, Language.PYTHON)
+    assert len(aliases) == 0
+
+
+def test_extract_import_alias_non_python():
+    """Test that non-Python languages return empty dict."""
+    code = 'import React from "react";\n'
+    aliases = extract_import_aliases(code, Language.JAVASCRIPT)
+    assert len(aliases) == 0

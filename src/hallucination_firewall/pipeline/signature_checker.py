@@ -5,6 +5,7 @@ from __future__ import annotations
 import inspect
 import logging
 from dataclasses import dataclass, field
+
 import jedi
 import tree_sitter_python as tspython
 from tree_sitter import Language, Parser
@@ -297,15 +298,21 @@ async def check_signatures(
     if language != LangEnum.PYTHON:
         return []
 
+    from .ast_validator import extract_import_aliases
+
     extractor = FunctionCallExtractor()
     lookup = SignatureLookup()
     validator = SignatureValidator()
 
     calls = extractor.extract_calls(code)
+    aliases = extract_import_aliases(code, language)
     issues: list[ValidationIssue] = []
 
     for call in calls:
-        sig = lookup.get_signature(call.name, code, call.line)
+        # Resolve alias to real module name
+        resolved_name = _resolve_alias(call.name, aliases)
+
+        sig = lookup.get_signature(resolved_name, code, call.line)
         if not sig:
             continue  # Fail-open: skip unknown functions
 
@@ -321,3 +328,29 @@ async def check_signatures(
             ))
 
     return issues
+
+
+def _resolve_alias(call_name: str, aliases: dict[str, str]) -> str:
+    """Resolve import alias to real module name.
+
+    Args:
+        call_name: Function call name (e.g. "pd.DataFrame")
+        aliases: Alias mappings (e.g. {"pd": "pandas"})
+
+    Returns:
+        Resolved name (e.g. "pandas.DataFrame") or original if no alias found
+    """
+    if not aliases or "." not in call_name:
+        return call_name
+
+    # Check if the first part matches an alias
+    parts = call_name.split(".", 1)
+    prefix = parts[0]
+
+    if prefix in aliases:
+        real_module = aliases[prefix]
+        if len(parts) > 1:
+            return f"{real_module}.{parts[1]}"
+        return real_module
+
+    return call_name

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import tomllib
 from pathlib import Path
 
@@ -26,9 +27,14 @@ def load_config(config_path: Path | None = None) -> FirewallConfig:
         config_path = find_config_file()
 
     if config_path is None or not config_path.exists():
-        return FirewallConfig()
+        config = FirewallConfig()
+    else:
+        with open(config_path, "rb") as f:
+            raw = tomllib.load(f)
+        config = FirewallConfig(**raw.get("firewall", raw))
 
-    with open(config_path, "rb") as f:
-        raw = tomllib.load(f)
+    # Check for CI environment variables
+    if os.getenv("FIREWALL_CI") == "1" or os.getenv("CI", "").lower() == "true":
+        config.ci_mode = True
 
-    return FirewallConfig(**raw.get("firewall", raw))
+    return config

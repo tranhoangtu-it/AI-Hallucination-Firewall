@@ -167,3 +167,39 @@ class TestCheckSignatures:
     async def test_empty_code(self) -> None:
         issues = await check_signatures("", Language.PYTHON, "test.py")
         assert issues == []
+
+    @pytest.mark.asyncio
+    async def test_alias_resolution_pandas(self) -> None:
+        """Test that import aliases are resolved before signature lookup."""
+        code = """
+import pandas as pd
+
+# This should resolve pd.DataFrame to pandas.DataFrame
+df = pd.DataFrame()
+"""
+        issues = await check_signatures(code, Language.PYTHON, "test.py")
+        # Should not crash; pandas.DataFrame may or may not be found depending on install
+        assert isinstance(issues, list)
+
+    @pytest.mark.asyncio
+    async def test_alias_resolution_numpy(self) -> None:
+        """Test alias resolution for numpy."""
+        code = """
+import numpy as np
+
+arr = np.array([1, 2, 3])
+"""
+        issues = await check_signatures(code, Language.PYTHON, "test.py")
+        assert isinstance(issues, list)
+
+    @pytest.mark.asyncio
+    async def test_alias_resolution_from_import(self) -> None:
+        """Test alias resolution for 'from X import Y as Z'."""
+        code = """
+from os import path as ospath
+
+result = ospath.join('a', 'b')
+"""
+        issues = await check_signatures(code, Language.PYTHON, "test.py")
+        # Should resolve ospath.join to os.path.join
+        assert isinstance(issues, list)

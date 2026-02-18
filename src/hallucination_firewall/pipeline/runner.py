@@ -32,6 +32,12 @@ class ValidationPipeline:
 
     def __init__(self, config: FirewallConfig | None = None) -> None:
         self.config = config or load_config()
+
+        # Apply strict CI policy overrides
+        if self.config.ci_mode:
+            self.config.fail_on_network_error = True
+            self.config.severity_threshold = Severity.WARNING
+
         self.cache = RegistryCache(
             self.config.cache_dir,
             self.config.cache_ttl_seconds,

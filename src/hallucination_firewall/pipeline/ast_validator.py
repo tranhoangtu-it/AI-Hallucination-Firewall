@@ -134,3 +134,79 @@ def _extract_js_imports(node: Node, imports: list[str]) -> None:
 
     for child in node.children:
         _extract_js_imports(child, imports)
+
+
+def extract_import_aliases(code: str, language: LangEnum) -> dict[str, str]:
+    """Extract import alias mappings from code (e.g. 'pd' -> 'pandas').
+
+    Args:
+        code: Source code to analyze
+        language: Programming language
+
+    Returns:
+        Dict mapping alias names to full module paths.
+        Examples: {"pd": "pandas", "np": "numpy", "plt": "matplotlib.pyplot"}
+    """
+    if language != LangEnum.PYTHON:
+        return {}
+
+    ts_lang = LANGUAGE_MAP.get(language)
+    if ts_lang is None:
+        return {}
+
+    try:
+        parser = Parser(ts_lang)
+        tree = parser.parse(code.encode("utf-8"))
+
+        aliases: dict[str, str] = {}
+        _extract_python_aliases(tree.root_node, aliases)
+        return aliases
+    except Exception:
+        logger.exception("Alias extraction failed")
+        return {}
+
+
+def _extract_python_aliases(node: Node, aliases: dict[str, str]) -> None:
+    """Extract Python import aliases from AST.
+
+    Handles:
+    - import pandas as pd -> {"pd": "pandas"}
+    - from matplotlib import pyplot as plt -> {"plt": "matplotlib.pyplot"}
+    """
+    if node.type == "import_statement":
+        # import X as Y
+        for child in node.children:
+            if child.type == "aliased_import":
+                # aliased_import has: dotted_name "as" identifier
+                module_node = child.child_by_field_name("name")
+                alias_node = child.child_by_field_name("alias")
+                if module_node and alias_node:
+                    module_name = module_node.text.decode("utf-8")
+                    alias_name = alias_node.text.decode("utf-8")
+                    aliases[alias_name] = module_name
+
+    elif node.type == "import_from_statement":
+        # from X import Y as Z
+        # Get the module name (X)
+        module_name = None
+        for child in node.children:
+            if child.type == "dotted_name":
+                module_name = child.text.decode("utf-8")
+                break
+
+        if module_name:
+            # Look for aliased imports in the import list
+            for child in node.children:
+                if child.type == "aliased_import":
+                    # aliased_import has: dotted_name "as" identifier
+                    name_node = child.child_by_field_name("name")
+                    alias_node = child.child_by_field_name("alias")
+                    if name_node and alias_node:
+                        imported_name = name_node.text.decode("utf-8")
+                        alias_name = alias_node.text.decode("utf-8")
+                        full_name = f"{module_name}.{imported_name}"
+                        aliases[alias_name] = full_name
+
+    # Recurse into children
+    for child in node.children:
+        _extract_python_aliases(child, aliases)
