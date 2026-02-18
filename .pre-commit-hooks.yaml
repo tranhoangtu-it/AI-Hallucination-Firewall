@@ -1,0 +1,19 @@
+- id: firewall-check
+  name: AI Hallucination Firewall
+  description: Validate AI-generated code for hallucinated APIs and wrong signatures
+  entry: firewall check
+  language: python
+  types: [python]
+  stages: [pre-commit]
+  pass_filenames: true
+  require_serial: false
+
+- id: firewall-check-js
+  name: AI Hallucination Firewall (JavaScript)
+  description: Validate JavaScript/TypeScript code for hallucinated APIs
+  entry: firewall check
+  language: python
+  types_or: [javascript, jsx, ts, tsx]
+  stages: [pre-commit]
+  pass_filenames: true
+  require_serial: false

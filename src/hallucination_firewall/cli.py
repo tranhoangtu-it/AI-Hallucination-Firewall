@@ -1,0 +1,174 @@
+"""Click CLI entry point for the hallucination firewall."""
+
+from __future__ import annotations
+
+import asyncio
+import sys
+from pathlib import Path
+
+import click
+from rich.console import Console
+
+from .config import load_config
+from .pipeline.runner import ValidationPipeline
+from .reporters.json_reporter import print_json
+from .reporters.terminal_reporter import print_result, print_summary
+
+console = Console()
+
+
+@click.group()
+@click.version_option(package_name="hallucination-firewall")
+def main() -> None:
+    """AI Hallucination Firewall — validates AI-generated code against real sources."""
+
+
+@main.command()
+@click.argument("files", nargs=-1, type=click.Path(exists=True))
+@click.option("--stdin", is_flag=True, help="Read code from stdin")
+@click.option(
+    "--format", "output_format",
+    type=click.Choice(["terminal", "json"]), default="terminal",
+)
+@click.option(
+    "--language", "-l",
+    type=click.Choice(["python", "javascript", "typescript"]), default=None,
+)
+def check(files: tuple[str, ...], stdin: bool, output_format: str, language: str | None) -> None:
+    """Validate code files for hallucinated APIs, wrong signatures, and more."""
+    if not files and not stdin:
+        console.print("[red]Error:[/] Provide file paths or use --stdin")
+        sys.exit(1)
+
+    results = asyncio.run(_run_check(files, stdin, language))
+
+    if output_format == "json":
+        print_json(results)
+    else:
+        for result in results:
+            print_result(result, console)
+        if len(results) > 1:
+            print_summary(results, console)
+
+    # Exit code: 1 if any errors found
+    if any(not r.passed for r in results):
+        sys.exit(1)
+
+
+@main.command()
+@click.argument("file", required=False, type=click.Path(exists=True))
+@click.option("--stdin", "use_stdin", is_flag=True, help="Read markdown from stdin")
+@click.option("--url", "url", default=None, help="Fetch markdown from URL")
+@click.option(
+    "--format", "output_format",
+    type=click.Choice(["terminal", "json"]), default="terminal",
+)
+def parse(
+    file: str | None, use_stdin: bool, url: str | None, output_format: str,
+) -> None:
+    """Parse and validate code blocks from LLM markdown output.
+
+    Examples:
+        firewall parse response.md
+        curl ... | firewall parse --stdin
+        firewall parse --url https://gist.githubusercontent.com/.../response.md
+    """
+    from .parsers.llm_output_parser import validate_llm_output
+
+    markdown = _read_parse_input(file, use_stdin, url)
+    report = asyncio.run(validate_llm_output(markdown))
+
+    if output_format == "json":
+        print_json(report.results)
+    else:
+        console.print("\n[bold]LLM Output Validation Report[/]")
+        console.print(f"Total blocks: {report.total_blocks}")
+        console.print(f"Passed: [green]{report.blocks_passed}[/]")
+        console.print(f"Failed: [red]{report.blocks_failed}[/]\n")
+        for result in report.results:
+            print_result(result, console)
+
+    if not report.passed:
+        sys.exit(1)
+
+
+def _read_parse_input(file: str | None, use_stdin: bool, url: str | None) -> str:
+    """Read markdown from file, stdin, or URL."""
+    if use_stdin:
+        return sys.stdin.read()
+    if url:
+        import httpx
+
+        resp = httpx.get(url, timeout=10, follow_redirects=True)
+        resp.raise_for_status()
+        return resp.text
+    if file:
+        return Path(file).read_text(encoding="utf-8")
+    console.print("[red]Error:[/] Provide a file path, --stdin, or --url")
+    sys.exit(1)
+
+
+@main.command()
+@click.option("--host", default="127.0.0.1", help="Server host")
+@click.option("--port", default=8000, help="Server port")
+def serve(host: str, port: int) -> None:
+    """Start the validation API server."""
+    import uvicorn
+
+    from .server import app
+
+    console.print(f"[bold green]Starting firewall API server on {host}:{port}[/]")
+    uvicorn.run(app, host=host, port=port)
+
+
+@main.command()
+def init() -> None:
+    """Create a .firewall.toml config file in the current directory."""
+    config_path = Path.cwd() / ".firewall.toml"
+    if config_path.exists():
+        console.print("[yellow]Config file already exists[/]")
+        return
+
+    config_path.write_text(
+        '[firewall]\n'
+        'languages = ["python", "javascript"]\n'
+        'severity_threshold = "warning"\n'
+        'cache_ttl_seconds = 3600\n'
+        'output_format = "terminal"\n'
+        '\n'
+        '[firewall.registries]\n'
+        'pypi_enabled = true\n'
+        'npm_enabled = true\n'
+        'timeout_seconds = 10\n'
+    )
+    console.print(f"[green]Created {config_path}[/]")
+
+
+async def _run_check(
+    files: tuple[str, ...],
+    stdin: bool,
+    language: str | None,
+) -> list:
+    """Run validation pipeline on files or stdin."""
+    config = load_config()
+    pipeline = ValidationPipeline(config)
+
+    results = []
+    try:
+        if stdin:
+            code = sys.stdin.read()
+            file_name = f"<stdin>.{language or 'py'}" if language else "<stdin>.py"
+            result = await pipeline.validate_code(code, file_name)
+            results.append(result)
+        else:
+            for file_path in files:
+                result = await pipeline.validate_file(file_path)
+                results.append(result)
+    finally:
+        await pipeline.close()
+
+    return results
+
+
+if __name__ == "__main__":
+    main()

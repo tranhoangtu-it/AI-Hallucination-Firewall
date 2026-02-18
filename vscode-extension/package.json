@@ -1,0 +1,56 @@
+{
+  "name": "hallucination-firewall",
+  "displayName": "AI Hallucination Firewall",
+  "description": "Real-time validation for AI-generated code — detects hallucinated APIs, wrong signatures, nonexistent packages",
+  "version": "0.1.0",
+  "publisher": "tranhoangtu",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": ["Linters"],
+  "activationEvents": [
+    "onLanguage:python",
+    "onLanguage:javascript",
+    "onLanguage:typescript"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Hallucination Firewall",
+      "properties": {
+        "hallucinationFirewall.apiEndpoint": {
+          "type": "string",
+          "default": "http://localhost:8000",
+          "description": "Validation API server URL"
+        },
+        "hallucinationFirewall.debounceDelay": {
+          "type": "number",
+          "default": 500,
+          "description": "Debounce delay in milliseconds"
+        },
+        "hallucinationFirewall.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable validation"
+        },
+        "hallucinationFirewall.triggerMode": {
+          "type": "string",
+          "enum": ["onSave", "onChange"],
+          "default": "onSave",
+          "description": "When to trigger: onSave (default) or onChange (real-time with debounce)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
