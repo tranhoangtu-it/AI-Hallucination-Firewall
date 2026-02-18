@@ -20,245 +20,34 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-  <style>
-    :root {
-      --bg: #0F172A;
-      --surface: #1E293B;
-      --primary: #3B82F6;
-      --accent: #22D3EE;
-      --text: #F1F5F9;
-      --muted: #94A3B8;
-      --success: #22C55E;
-      --danger: #EF4444;
-      --warning: #F59E0B;
-      --border: rgba(255, 255, 255, 0.05);
-    }
-
-    [data-theme="light"] {
-      --bg: #F8FAFC;
-      --surface: #FFFFFF;
-      --primary: #2563EB;
-      --accent: #0891B2;
-      --text: #0F172A;
-      --muted: #64748B;
-      --success: #16A34A;
-      --danger: #DC2626;
-      --warning: #D97706;
-      --border: rgba(0, 0, 0, 0.1);
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    }
-
-    .font-mono {
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    }
-
-    /* Hero gradient */
-    .hero-gradient {
-      background: radial-gradient(ellipse at 20% 50%, rgba(59,130,246,0.15) 0%, transparent 50%),
-                  radial-gradient(ellipse at 80% 20%, rgba(34,211,238,0.1) 0%, transparent 50%),
-                  radial-gradient(ellipse at 50% 80%, rgba(139,92,246,0.08) 0%, transparent 50%);
-    }
-
-    [data-theme="light"] .hero-gradient {
-      background: radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.08) 0%, transparent 50%),
-                  radial-gradient(ellipse at 80% 20%, rgba(8,145,178,0.06) 0%, transparent 50%);
-    }
-
-    /* Grid pattern */
-    .grid-pattern {
-      background-image: linear-gradient(var(--border) 1px, transparent 1px),
-                        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
-
-    /* Code glow */
-    .code-glow {
-      box-shadow: 0 0 60px rgba(59,130,246,0.15);
-    }
-
-    [data-theme="light"] .code-glow {
-      box-shadow: 0 0 40px rgba(37,99,235,0.1);
-    }
-
-    /* Fade-up animation */
-    .fade-up {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Feature card hover */
-    .feature-card {
-      background-color: var(--surface);
-      border: 1px solid var(--border);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      cursor: pointer;
-    }
-    .feature-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(59,130,246,0.15);
-    }
-
-    [data-theme="light"] .feature-card:hover {
-      box-shadow: 0 12px 40px rgba(37,99,235,0.1);
-    }
-
-    /* Pipeline Flow Animation */
-    @keyframes flowRight {
-      0% { transform: translateX(-100%); opacity: 0; }
-      50% { opacity: 1; }
-      100% { transform: translateX(100%); opacity: 0; }
-    }
-
-    .flow-line {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .flow-line::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 30%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, var(--primary), transparent);
-      animation: flowRight 3s infinite;
-    }
-
-    /* Code scanning animation */
-    @keyframes scanLine {
-      0%, 100% { top: 0%; opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { top: 100%; opacity: 0; }
-    }
-
-    .scan-demo {
-      position: relative;
-    }
-
-    .scan-line {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--primary), transparent);
-      animation: scanLine 4s infinite;
-      z-index: 10;
-    }
-
-    /* Terminal typing animation */
-    @keyframes blink {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
-    }
-
-    .typing-cursor::after {
-      content: '|';
-      animation: blink 1s infinite;
-      color: var(--primary);
-    }
-
-    /* Error line highlight animation */
-    @keyframes errorPulse {
-      0%, 100% { background-color: rgba(239, 68, 68, 0.1); }
-      50% { background-color: rgba(239, 68, 68, 0.2); }
-    }
-
-    .error-line {
-      animation: errorPulse 2s infinite;
-    }
-
-    /* SVG Pipeline Animation */
-    .pipeline-svg .flow-particle {
-      animation: flowParticle 4s infinite;
-    }
-
-    @keyframes flowParticle {
-      0% { opacity: 0; cx: 50; }
-      10% { opacity: 1; }
-      25% { cx: 200; }
-      50% { cx: 350; }
-      75% { cx: 500; }
-      90% { opacity: 1; }
-      100% { opacity: 0; cx: 650; }
-    }
-
-    /* Mobile menu */
-    .mobile-menu {
-      display: none;
-      background-color: var(--surface);
-      border: 1px solid var(--border);
-    }
-
-    .mobile-menu.active {
-      display: block;
-    }
-
-    /* Utility classes */
-    .bg-surface { background-color: var(--surface); }
-    .bg-bg { background-color: var(--bg); }
-    .text-primary { color: var(--primary); }
-    .text-accent { color: var(--accent); }
-    .text-text { color: var(--text); }
-    .text-muted { color: var(--muted); }
-    .text-success { color: var(--success); }
-    .text-danger { color: var(--danger); }
-    .text-warning { color: var(--warning); }
-    .border-primary { border-color: var(--border); }
-
-    /* Reduced motion */
-    @media (prefers-reduced-motion: reduce) {
-      .fade-up { opacity: 1; transform: none; transition: none; }
-      .feature-card { transition: none; }
-      .flow-line::after, .scan-line { animation: none; }
-      .typing-cursor::after { animation: none; }
-      .error-line { animation: none; }
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .desktop-nav { display: none; }
-    }
-
-    @media (min-width: 769px) {
-      .mobile-menu-btn { display: none; }
-    }
-  </style>
+  <!-- External CSS -->
+  <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
+  <!-- Skip to content link -->
+  <a href="#main-content" class="skip-to-content">Skip to main content</a>
 
   <!-- Navbar -->
-  <nav class="fixed top-4 left-4 right-4 z-50 max-w-6xl mx-auto">
+  <nav class="fixed top-4 left-4 right-4 z-50 max-w-6xl mx-auto" role="navigation" aria-label="Main navigation">
     <div class="bg-surface backdrop-blur-xl border rounded-2xl px-6 py-3 flex items-center justify-between" style="background-color: var(--surface); border-color: var(--border);">
-      <a href="#" class="flex items-center gap-2 cursor-pointer">
-        <i data-lucide="shield-check" class="w-6 h-6 text-primary"></i>
+      <a href="#" class="flex items-center gap-2 cursor-pointer" aria-label="AI Hallucination Firewall Home">
+        <i data-lucide="shield-check" class="w-6 h-6 text-primary" aria-hidden="true"></i>
         <span class="font-semibold text-lg hidden sm:inline" data-i18n="nav.title">Hallucination Firewall</span>
       </a>
 
       <div class="desktop-nav flex items-center gap-8 text-sm text-muted">
-        <a href="#features" class="hover:text-text transition-colors cursor-pointer" data-i18n="nav.features">Features</a>
-        <a href="#pipeline" class="hover:text-text transition-colors cursor-pointer" data-i18n="nav.pipeline">Pipeline</a>
-        <a href="#integrations" class="hover:text-text transition-colors cursor-pointer" data-i18n="nav.integrations">Integrations</a>
-        <a href="#quickstart" class="hover:text-text transition-colors cursor-pointer" data-i18n="nav.quickstart">Quick Start</a>
+        <a href="#demo" class="hover:text-text transition-colors cursor-pointer" data-i18n="nav.demo" aria-label="Demo section">Demo</a>
+        <a href="#features" class="hover:text-text transition-colors cursor-pointer" data-i18n="nav.features" aria-label="Features section">Features</a>
+        <a href="#pipeline" class="hover:text-text transition-colors cursor-pointer" data-i18n="nav.pipeline" aria-label="Pipeline section">Pipeline</a>
+        <a href="#integrations" class="hover:text-text transition-colors cursor-pointer" data-i18n="nav.integrations" aria-label="Integrations section">Integrations</a>
+        <a href="#quickstart" class="hover:text-text transition-colors cursor-pointer" data-i18n="nav.quickstart" aria-label="Quick Start section">Quick Start</a>
+        <a href="#faq" class="hover:text-text transition-colors cursor-pointer" data-i18n="nav.faq" aria-label="FAQ section">FAQ</a>
       </div>
 
       <div class="flex items-center gap-3">
         <!-- Language Switcher -->
-        <select id="langSwitcher" class="bg-surface border text-sm px-3 py-1.5 rounded-lg cursor-pointer" style="background-color: var(--surface); border-color: var(--border); color: var(--text);">
+        <select id="langSwitcher" class="bg-surface border text-sm px-3 py-1.5 rounded-lg cursor-pointer" style="background-color: var(--surface); border-color: var(--border); color: var(--text);" aria-label="Select language">
           <option value="en">EN</option>
           <option value="vi">VI</option>
           <option value="ja">JA</option>
@@ -266,83 +55,88 @@
         </select>
 
         <!-- Theme Toggle -->
-        <button id="themeToggle" class="p-2 rounded-lg hover:bg-surface transition-colors cursor-pointer" style="color: var(--text);">
-          <i data-lucide="sun" class="w-5 h-5 theme-icon-light" style="display: none;"></i>
-          <i data-lucide="moon" class="w-5 h-5 theme-icon-dark"></i>
+        <button id="themeToggle" class="p-2 rounded-lg hover:bg-surface transition-colors cursor-pointer" style="color: var(--text);" aria-label="Toggle theme">
+          <i data-lucide="sun" class="w-5 h-5 theme-icon-light" style="display: none;" aria-hidden="true"></i>
+          <i data-lucide="moon" class="w-5 h-5 theme-icon-dark" aria-hidden="true"></i>
         </button>
 
         <!-- GitHub Button -->
-        <a href="https://github.com/tranhoangtu-it/AI-Hallucination-Firewall" target="_blank" rel="noopener" class="hidden sm:flex items-center gap-2 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer" style="background-color: var(--primary);">
-          <i data-lucide="github" class="w-4 h-4"></i>
+        <a href="https://github.com/tranhoangtu-it/AI-Hallucination-Firewall" target="_blank" rel="noopener" class="hidden sm:flex items-center gap-2 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer" style="background-color: var(--primary);" aria-label="View project on GitHub">
+          <i data-lucide="github" class="w-4 h-4" aria-hidden="true"></i>
           <span>GitHub</span>
         </a>
 
         <!-- Mobile Menu Button -->
-        <button class="mobile-menu-btn p-2 cursor-pointer md:hidden" id="mobileMenuBtn">
-          <i data-lucide="menu" class="w-6 h-6" style="color: var(--text);"></i>
+        <button class="mobile-menu-btn p-2 cursor-pointer md:hidden" id="mobileMenuBtn" aria-label="Toggle mobile menu" aria-expanded="false">
+          <i data-lucide="menu" class="w-6 h-6" style="color: var(--text);" aria-hidden="true"></i>
         </button>
       </div>
     </div>
 
     <!-- Mobile Menu -->
     <div class="mobile-menu mt-2 rounded-2xl px-6 py-4" id="mobileMenu">
+      <a href="#demo" class="block py-2 hover:text-primary transition-colors cursor-pointer" data-i18n="nav.demo">Demo</a>
       <a href="#features" class="block py-2 hover:text-primary transition-colors cursor-pointer" data-i18n="nav.features">Features</a>
       <a href="#pipeline" class="block py-2 hover:text-primary transition-colors cursor-pointer" data-i18n="nav.pipeline">Pipeline</a>
       <a href="#integrations" class="block py-2 hover:text-primary transition-colors cursor-pointer" data-i18n="nav.integrations">Integrations</a>
       <a href="#quickstart" class="block py-2 hover:text-primary transition-colors cursor-pointer" data-i18n="nav.quickstart">Quick Start</a>
+      <a href="#faq" class="block py-2 hover:text-primary transition-colors cursor-pointer" data-i18n="nav.faq">FAQ</a>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="hero-gradient grid-pattern relative min-h-screen flex items-center pt-24 pb-16 px-4">
-    <div class="max-w-6xl mx-auto w-full">
-      <div class="grid lg:grid-cols-2 gap-12 items-center">
+  <!-- Main Content -->
+  <main id="main-content" role="main">
 
-        <!-- Left: Text -->
-        <div class="fade-up">
-          <div class="inline-flex items-center gap-2 border rounded-full px-4 py-1.5 text-sm mb-6" style="background-color: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); color: var(--primary);">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
-            <span data-i18n="hero.badge">v0.1.0 — Open Source</span>
-          </div>
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-            <span data-i18n="hero.title">Type Checker</span><br/>
-            <span class="text-primary" data-i18n="hero.subtitle">for AI Output</span>
-          </h1>
-          <p class="text-lg max-w-lg mb-8 leading-relaxed" style="color: var(--muted);" data-i18n="hero.description">
-            Validate AI-generated code before it enters your codebase. Catches hallucinated APIs, wrong signatures, and nonexistent packages across Python, JavaScript, and TypeScript.
-          </p>
-          <div class="flex flex-wrap gap-4">
-            <a href="#quickstart" class="inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl transition-colors cursor-pointer" style="background-color: var(--primary);">
-              <i data-lucide="terminal" class="w-5 h-5"></i>
-              <span data-i18n="hero.cta_start">Get Started</span>
-            </a>
-            <a href="https://github.com/tranhoangtu-it/AI-Hallucination-Firewall" target="_blank" rel="noopener" class="inline-flex items-center gap-2 border font-semibold px-6 py-3 rounded-xl transition-colors cursor-pointer" style="background-color: var(--surface); border-color: var(--border); color: var(--text);">
-              <i data-lucide="github" class="w-5 h-5"></i>
-              <span data-i18n="hero.cta_source">View Source</span>
-            </a>
-          </div>
-          <!-- Stats -->
-          <div class="flex gap-8 mt-10 text-sm">
-            <div><span class="text-2xl font-bold">4</span><br/><span class="text-muted" data-i18n="hero.stats.layers">Validation Layers</span></div>
-            <div><span class="text-2xl font-bold">3</span><br/><span class="text-muted" data-i18n="hero.stats.languages">Languages</span></div>
-            <div><span class="text-2xl font-bold">68</span><br/><span class="text-muted" data-i18n="hero.stats.tests">Tests Passing</span></div>
-            <div><span class="text-2xl font-bold text-success">MIT</span><br/><span class="text-muted" data-i18n="hero.stats.license">License</span></div>
-          </div>
-        </div>
+    <!-- Hero -->
+    <section class="hero-gradient grid-pattern relative min-h-screen flex items-center pt-24 pb-16 px-4">
+      <div class="max-w-6xl mx-auto w-full">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
 
-        <!-- Right: Code Demo with Scan Animation -->
-        <div class="fade-up scan-demo">
-          <div class="scan-line"></div>
-          <div class="border rounded-2xl overflow-hidden code-glow" style="background-color: var(--bg); border-color: var(--border);">
-            <!-- Terminal header -->
-            <div class="flex items-center gap-2 px-4 py-3 border-b" style="background-color: rgba(30,41,59,0.5); border-color: var(--border);">
-              <span class="w-3 h-3 rounded-full" style="background-color: rgba(239,68,68,0.8);"></span>
-              <span class="w-3 h-3 rounded-full" style="background-color: rgba(245,158,11,0.8);"></span>
-              <span class="w-3 h-3 rounded-full" style="background-color: rgba(34,197,94,0.8);"></span>
-              <span class="ml-3 text-xs font-mono" style="color: var(--muted);">firewall check app.py</span>
+          <!-- Left: Text -->
+          <div class="fade-up">
+            <div class="inline-flex items-center gap-2 border rounded-full px-4 py-1.5 text-sm mb-6" style="background-color: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); color: var(--primary);">
+              <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
+              <span data-i18n="hero.badge">v0.1.0 — Open Source</span>
             </div>
-            <!-- Code content -->
-            <pre class="p-5 text-sm font-mono leading-relaxed overflow-x-auto"><code><span class="text-muted">$</span> <span class="text-accent">firewall</span> check app.py
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+              <span data-i18n="hero.title">Type Checker</span><br/>
+              <span class="text-primary" data-i18n="hero.subtitle">for AI Output</span>
+            </h1>
+            <p class="text-lg max-w-lg mb-8 leading-relaxed" style="color: var(--muted);" data-i18n="hero.description">
+              Validate AI-generated code before it enters your codebase. Catches hallucinated APIs, wrong signatures, and nonexistent packages across Python, JavaScript, and TypeScript.
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <a href="#quickstart" class="inline-flex items-center gap-2 text-white font-semibold px-6 py-3 rounded-xl transition-colors cursor-pointer" style="background-color: var(--primary);" aria-label="Get started with AI Hallucination Firewall">
+                <i data-lucide="terminal" class="w-5 h-5" aria-hidden="true"></i>
+                <span data-i18n="hero.cta_start">Get Started</span>
+              </a>
+              <a href="https://github.com/tranhoangtu-it/AI-Hallucination-Firewall" target="_blank" rel="noopener" class="inline-flex items-center gap-2 border font-semibold px-6 py-3 rounded-xl transition-colors cursor-pointer" style="background-color: var(--surface); border-color: var(--border); color: var(--text);" aria-label="View source code on GitHub">
+                <i data-lucide="github" class="w-5 h-5" aria-hidden="true"></i>
+                <span data-i18n="hero.cta_source">View Source</span>
+              </a>
+            </div>
+            <!-- Stats -->
+            <div class="flex gap-8 mt-10 text-sm">
+              <div><span class="text-2xl font-bold">4</span><br/><span class="text-muted" data-i18n="hero.stats.layers">Validation Layers</span></div>
+              <div><span class="text-2xl font-bold">3</span><br/><span class="text-muted" data-i18n="hero.stats.languages">Languages</span></div>
+              <div><span class="text-2xl font-bold">140+</span><br/><span class="text-muted" data-i18n="hero.stats.tests">Tests Passing</span></div>
+              <div><span class="text-2xl font-bold text-success">87%</span><br/><span class="text-muted" data-i18n="hero.stats.coverage">Coverage</span></div>
+            </div>
+          </div>
+
+          <!-- Right: Code Demo with Scan Animation -->
+          <div class="fade-up scan-demo">
+            <div class="scan-line"></div>
+            <div class="border rounded-2xl overflow-hidden code-glow" style="background-color: var(--bg); border-color: var(--border);">
+              <!-- Terminal header -->
+              <div class="flex items-center gap-2 px-4 py-3 border-b" style="background-color: rgba(30,41,59,0.5); border-color: var(--border);">
+                <span class="w-3 h-3 rounded-full" style="background-color: rgba(239,68,68,0.8);" aria-hidden="true"></span>
+                <span class="w-3 h-3 rounded-full" style="background-color: rgba(245,158,11,0.8);" aria-hidden="true"></span>
+                <span class="w-3 h-3 rounded-full" style="background-color: rgba(34,197,94,0.8);" aria-hidden="true"></span>
+                <span class="ml-3 text-xs font-mono" style="color: var(--muted);">firewall check app.py</span>
+              </div>
+              <!-- Code content -->
+              <pre class="p-5 text-sm font-mono leading-relaxed overflow-x-auto"><code><span class="text-muted">$</span> <span class="text-accent">firewall</span> check app.py
 
 <span class="text-muted">╭──────────────────────────────────────────╮</span>
 <span class="text-muted">│</span> <span class="font-bold">app.py</span> (python) — <span class="text-danger font-bold">FAILED</span>          <span class="text-muted">│</span>
@@ -361,282 +155,374 @@
     argument: <span class="text-warning">'fake_param'</span>
 
 <span class="text-danger font-bold">1/1 files failed</span> — 2 errors, 1 warning</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Proof -->
+        <div class="mt-16 fade-up">
+          <div class="flex flex-wrap justify-center items-center gap-6">
+            <!-- GitHub Stars Badge -->
+            <a href="https://github.com/tranhoangtu-it/AI-Hallucination-Firewall" target="_blank" rel="noopener" aria-label="Star on GitHub">
+              <img src="https://img.shields.io/github/stars/tranhoangtu-it/AI-Hallucination-Firewall?style=social" alt="GitHub Stars" />
+            </a>
+          </div>
+
+          <!-- Metrics -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 max-w-3xl mx-auto">
+            <div class="metric-card text-center p-4 rounded-xl">
+              <div class="text-2xl font-bold mb-1">140+</div>
+              <div class="text-sm text-muted" data-i18n="social.metric_tests">140+ Tests</div>
+            </div>
+            <div class="metric-card text-center p-4 rounded-xl">
+              <div class="text-2xl font-bold mb-1">4</div>
+              <div class="text-sm text-muted" data-i18n="social.metric_layers">4 Validation Layers</div>
+            </div>
+            <div class="metric-card text-center p-4 rounded-xl">
+              <div class="text-2xl font-bold mb-1">3</div>
+              <div class="text-sm text-muted" data-i18n="social.metric_languages">3 Languages</div>
+            </div>
+            <div class="metric-card text-center p-4 rounded-xl">
+              <div class="text-2xl font-bold text-success mb-1">87%</div>
+              <div class="text-sm text-muted" data-i18n="social.metric_coverage">87% Coverage</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Features -->
-  <section id="features" class="py-24 px-4">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-16 fade-up">
-        <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="features.title">Everything You Need</h2>
-        <p class="text-lg max-w-2xl mx-auto" style="color: var(--muted);" data-i18n="features.subtitle">Four validation layers plus seamless integrations for your entire development workflow.</p>
-      </div>
-
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        <div class="feature-card rounded-2xl p-6 fade-up">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(59,130,246,0.1);">
-            <i data-lucide="file-code-2" class="w-6 h-6 text-primary"></i>
-          </div>
-          <h3 class="text-lg font-semibold mb-2" data-i18n="features.ast.title">AST Syntax Validation</h3>
-          <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.ast.description">Tree-sitter powered parsing catches malformed code in Python, JavaScript, and TypeScript before it runs.</p>
+    <!-- Interactive Demo -->
+    <section id="demo" class="py-24 px-4" style="background-color: var(--bg);">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12 fade-up">
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="demo.title">See It In Action</h2>
+          <p class="text-lg max-w-2xl mx-auto" style="color: var(--muted);" data-i18n="demo.subtitle">Watch the firewall detect hallucinated imports, invalid signatures, and nonexistent packages in real-time.</p>
         </div>
 
-        <div class="feature-card rounded-2xl p-6 fade-up">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(34,211,238,0.1);">
-            <i data-lucide="package-check" class="w-6 h-6 text-accent"></i>
+        <div class="grid lg:grid-cols-2 gap-6 fade-up" id="demoValidation">
+          <!-- Left: Code Input -->
+          <div class="border rounded-2xl overflow-hidden" style="background-color: var(--surface); border-color: var(--border);">
+            <div class="px-4 py-3 border-b flex items-center justify-between" style="border-color: var(--border);">
+              <span class="font-semibold text-sm" data-i18n="demo.input_title">AI-Generated Code</span>
+              <i data-lucide="code-2" class="w-4 h-4 text-primary" aria-hidden="true"></i>
+            </div>
+            <pre class="p-4 text-sm font-mono leading-relaxed overflow-x-auto" style="color: var(--text);"><code><span class="text-accent">import</span> pandas <span class="text-accent">as</span> pd
+<span class="text-accent">from</span> sklearn.magic_solver <span class="text-accent">import</span> AutoFix  <span class="text-muted"># hallucinated</span>
+<span class="text-accent">import</span> nonexistent_package  <span class="text-muted"># hallucinated</span>
+
+result = pd.DataFrame.magic_method()  <span class="text-muted"># wrong signature</span></code></pre>
           </div>
-          <h3 class="text-lg font-semibold mb-2" data-i18n="features.import.title">Import Verification</h3>
-          <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.import.description">Validates every import against PyPI and npm registries. Catches hallucinated packages instantly.</p>
-        </div>
 
-        <div class="feature-card rounded-2xl p-6 fade-up">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(34,197,94,0.1);">
-            <i data-lucide="scan-search" class="w-6 h-6 text-success"></i>
+          <!-- Right: Validation Output -->
+          <div class="border rounded-2xl overflow-hidden" style="background-color: var(--surface); border-color: var(--border);">
+            <div class="px-4 py-3 border-b flex items-center justify-between" style="border-color: var(--border);">
+              <span class="font-semibold text-sm" data-i18n="demo.output_title">Validation Results</span>
+              <button id="runDemoButton" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors" style="background-color: var(--primary); color: white;" aria-label="Run validation">
+                <span data-i18n="demo.run_button">Run Validation</span>
+              </button>
+            </div>
+            <div class="p-4 space-y-2 min-h-[200px]" id="demoResults">
+              <div class="text-muted text-sm">Click "Run Validation" to see results...</div>
+            </div>
           </div>
-          <h3 class="text-lg font-semibold mb-2" data-i18n="features.signature.title">Signature Checking</h3>
-          <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.signature.description">Jedi-powered introspection validates function parameters, required args, and keyword arguments against real APIs.</p>
-        </div>
-
-        <div class="feature-card rounded-2xl p-6 fade-up">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(245,158,11,0.1);">
-            <i data-lucide="file-text" class="w-6 h-6 text-warning"></i>
-          </div>
-          <h3 class="text-lg font-semibold mb-2" data-i18n="features.parser.title">LLM Output Parser</h3>
-          <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.parser.description">Extracts code blocks from ChatGPT/Claude markdown responses and validates each block independently.</p>
-        </div>
-
-        <div class="feature-card rounded-2xl p-6 fade-up">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(168,85,247,0.1);">
-            <i data-lucide="git-commit-horizontal" class="w-6 h-6" style="color: #A855F7;"></i>
-          </div>
-          <h3 class="text-lg font-semibold mb-2" data-i18n="features.precommit.title">Pre-commit Hook</h3>
-          <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.precommit.description">Automatic validation on every git commit. Catches issues before they enter your codebase. SQLite cached.</p>
-        </div>
-
-        <div class="feature-card rounded-2xl p-6 fade-up">
-          <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(96,165,250,0.1);">
-            <i data-lucide="monitor" class="w-6 h-6" style="color: #60A5FA;"></i>
-          </div>
-          <h3 class="text-lg font-semibold mb-2" data-i18n="features.vscode.title">VS Code Extension</h3>
-          <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.vscode.description">Real-time inline diagnostics. Squiggly underlines for errors. Configurable on-save or on-change trigger.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Pipeline -->
-  <section id="pipeline" class="py-24 px-4" style="background-color: var(--bg);">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-16 fade-up">
-        <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="pipeline.title">4-Layer Validation Pipeline</h2>
-        <p class="text-lg max-w-2xl mx-auto" style="color: var(--muted);" data-i18n="pipeline.subtitle">Each layer catches different categories of AI hallucinations, from syntax errors to wrong function signatures.</p>
-      </div>
-
-      <!-- SVG Pipeline Visualization -->
-      <div class="mb-12 fade-up">
-        <svg class="pipeline-svg w-full h-auto" viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg">
-          <!-- Layer 1: Syntax -->
-          <rect x="20" y="80" width="120" height="90" rx="12" fill="var(--surface)" stroke="var(--primary)" stroke-width="2"/>
-          <circle cx="80" cy="110" r="15" fill="rgba(59,130,246,0.2)"/>
-          <path d="M75 110 L78 115 L85 105" stroke="var(--primary)" stroke-width="2" fill="none"/>
-          <text x="80" y="145" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600">Syntax</text>
-          <text x="80" y="160" text-anchor="middle" fill="var(--muted)" font-size="11">tree-sitter</text>
-
-          <!-- Arrow 1 -->
-          <line x1="140" y1="125" x2="180" y2="125" stroke="var(--primary)" stroke-width="2" class="flow-line"/>
-          <polygon points="180,125 175,122 175,128" fill="var(--primary)"/>
-
-          <!-- Layer 2: Imports -->
-          <rect x="190" y="80" width="120" height="90" rx="12" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
-          <circle cx="250" cy="110" r="15" fill="rgba(34,211,238,0.2)"/>
-          <rect x="245" y="105" width="10" height="10" fill="none" stroke="var(--accent)" stroke-width="2"/>
-          <text x="250" y="145" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600">Imports</text>
-          <text x="250" y="160" text-anchor="middle" fill="var(--muted)" font-size="11">PyPI/npm</text>
-
-          <!-- Arrow 2 -->
-          <line x1="310" y1="125" x2="350" y2="125" stroke="var(--accent)" stroke-width="2" class="flow-line"/>
-          <polygon points="350,125 345,122 345,128" fill="var(--accent)"/>
-
-          <!-- Layer 3: Signatures -->
-          <rect x="360" y="80" width="120" height="90" rx="12" fill="var(--surface)" stroke="var(--success)" stroke-width="2"/>
-          <circle cx="420" cy="110" r="15" fill="rgba(34,197,94,0.2)"/>
-          <circle cx="420" cy="110" r="8" fill="none" stroke="var(--success)" stroke-width="2"/>
-          <circle cx="420" cy="110" r="3" fill="var(--success)"/>
-          <text x="420" y="145" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600">Signatures</text>
-          <text x="420" y="160" text-anchor="middle" fill="var(--muted)" font-size="11">Jedi</text>
-
-          <!-- Arrow 3 -->
-          <line x1="480" y1="125" x2="520" y2="125" stroke="var(--success)" stroke-width="2" class="flow-line"/>
-          <polygon points="520,125 515,122 515,128" fill="var(--success)"/>
-
-          <!-- Layer 4: Report -->
-          <rect x="530" y="80" width="120" height="90" rx="12" fill="var(--surface)" stroke="var(--warning)" stroke-width="2"/>
-          <circle cx="590" cy="110" r="15" fill="rgba(245,158,11,0.2)"/>
-          <path d="M590 105 L590 113 M590 117 L590 118" stroke="var(--warning)" stroke-width="2.5" stroke-linecap="round"/>
-          <text x="590" y="145" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600">Report</text>
-          <text x="590" y="160" text-anchor="middle" fill="var(--muted)" font-size="11">Rich/JSON</text>
-
-          <!-- Animated flow particle -->
-          <circle class="flow-particle" r="4" fill="var(--primary)" opacity="0.8"/>
-
-          <!-- Labels -->
-          <text x="20" y="30" fill="var(--primary)" font-size="12" font-weight="600">Layer 1</text>
-          <text x="190" y="30" fill="var(--accent)" font-size="12" font-weight="600">Layer 2</text>
-          <text x="360" y="30" fill="var(--success)" font-size="12" font-weight="600">Layer 3</text>
-          <text x="530" y="30" fill="var(--warning)" font-size="12" font-weight="600">Layer 4</text>
-
-          <!-- Input/Output -->
-          <text x="10" y="220" fill="var(--muted)" font-size="12">Input: Code</text>
-          <text x="560" y="220" fill="var(--muted)" font-size="12">Output: Validation</text>
-        </svg>
-      </div>
-
-      <!-- Layer Cards -->
-      <div class="grid md:grid-cols-4 gap-6 fade-up">
-        <div class="relative border rounded-2xl p-6 text-center" style="background-color: var(--surface); border-color: var(--border);">
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-white text-xs font-bold px-3 py-1 rounded-full" style="background-color: var(--primary);" data-i18n="pipeline.layer1.badge">Layer 1</div>
-          <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mt-4 mb-4" style="background-color: rgba(59,130,246,0.1);">
-            <i data-lucide="code-2" class="w-7 h-7 text-primary"></i>
-          </div>
-          <h3 class="font-semibold mb-2" data-i18n="pipeline.layer1.title">Syntax</h3>
-          <p class="text-sm" style="color: var(--muted);" data-i18n="pipeline.layer1.description">tree-sitter AST parsing catches malformed code</p>
-        </div>
-
-        <div class="relative border rounded-2xl p-6 text-center" style="background-color: var(--surface); border-color: var(--border);">
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full" style="background-color: var(--accent); color: var(--bg);" data-i18n="pipeline.layer2.badge">Layer 2</div>
-          <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mt-4 mb-4" style="background-color: rgba(34,211,238,0.1);">
-            <i data-lucide="package" class="w-7 h-7 text-accent"></i>
-          </div>
-          <h3 class="font-semibold mb-2" data-i18n="pipeline.layer2.title">Imports</h3>
-          <p class="text-sm" style="color: var(--muted);" data-i18n="pipeline.layer2.description">Verifies packages exist on PyPI & npm registries</p>
-        </div>
-
-        <div class="relative border rounded-2xl p-6 text-center" style="background-color: var(--surface); border-color: var(--border);">
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full" style="background-color: var(--success); color: var(--bg);" data-i18n="pipeline.layer3.badge">Layer 3</div>
-          <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mt-4 mb-4" style="background-color: rgba(34,197,94,0.1);">
-            <i data-lucide="scan-search" class="w-7 h-7 text-success"></i>
-          </div>
-          <h3 class="font-semibold mb-2" data-i18n="pipeline.layer3.title">Signatures</h3>
-          <p class="text-sm" style="color: var(--muted);" data-i18n="pipeline.layer3.description">Validates function calls against real API signatures</p>
-        </div>
-
-        <div class="relative border rounded-2xl p-6 text-center" style="background-color: var(--surface); border-color: var(--border);">
-          <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full" style="background-color: var(--warning); color: var(--bg);" data-i18n="pipeline.layer4.badge">Layer 4</div>
-          <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mt-4 mb-4" style="background-color: rgba(245,158,11,0.1);">
-            <i data-lucide="alert-triangle" class="w-7 h-7 text-warning"></i>
-          </div>
-          <h3 class="font-semibold mb-2" data-i18n="pipeline.layer4.title">Deprecation</h3>
-          <p class="text-sm" style="color: var(--muted);" data-i18n="pipeline.layer4.description">Flags deprecated patterns with replacement suggestions</p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Integrations -->
-  <section id="integrations" class="py-24 px-4">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-16 fade-up">
-        <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="integrations.title">Fits Your Workflow</h2>
-        <p class="text-lg max-w-2xl mx-auto" style="color: var(--muted);" data-i18n="integrations.subtitle">CLI, API server, pre-commit hooks, VS Code extension — use it however you work.</p>
-      </div>
+    <!-- Features -->
+    <section id="features" class="py-24 px-4">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 fade-up">
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="features.title">Everything You Need</h2>
+          <p class="text-lg max-w-2xl mx-auto" style="color: var(--muted);" data-i18n="features.subtitle">Four validation layers plus seamless integrations for your entire development workflow.</p>
+        </div>
 
-      <div class="grid md:grid-cols-2 gap-8">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        <!-- CLI -->
-        <div class="border rounded-2xl overflow-hidden fade-up" style="background-color: var(--surface); border-color: var(--border);">
-          <div class="px-6 py-4 border-b flex items-center gap-3" style="border-color: var(--border);">
-            <i data-lucide="terminal" class="w-5 h-5 text-primary"></i>
-            <span class="font-semibold" data-i18n="integrations.cli.title">CLI</span>
-            <span class="text-xs px-2 py-0.5 rounded-full ml-auto" style="background-color: rgba(59,130,246,0.1); color: var(--primary);" data-i18n="integrations.cli.badge">Primary</span>
+          <div class="feature-card rounded-2xl p-6 fade-up">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(59,130,246,0.1);">
+              <i data-lucide="file-code-2" class="w-6 h-6 text-primary" aria-hidden="true"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" data-i18n="features.ast.title">AST Syntax Validation</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.ast.description">Tree-sitter powered parsing catches malformed code in Python, JavaScript, and TypeScript before it runs.</p>
           </div>
-          <pre class="p-5 text-sm font-mono leading-relaxed overflow-x-auto" style="color: var(--muted);"><code><span class="text-accent">$</span> firewall check app.py
+
+          <div class="feature-card rounded-2xl p-6 fade-up">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(34,211,238,0.1);">
+              <i data-lucide="package-check" class="w-6 h-6 text-accent" aria-hidden="true"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" data-i18n="features.import.title">Import Verification</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.import.description">Validates every import against PyPI and npm registries. Catches hallucinated packages instantly with parallel checks.</p>
+          </div>
+
+          <div class="feature-card rounded-2xl p-6 fade-up">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(34,197,94,0.1);">
+              <i data-lucide="scan-search" class="w-6 h-6 text-success" aria-hidden="true"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" data-i18n="features.signature.title">Signature Checking</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.signature.description">Jedi-powered introspection with alias resolution. Validates function calls against real APIs.</p>
+          </div>
+
+          <div class="feature-card rounded-2xl p-6 fade-up">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(245,158,11,0.1);">
+              <i data-lucide="file-text" class="w-6 h-6 text-warning" aria-hidden="true"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" data-i18n="features.parser.title">LLM Output Parser</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.parser.description">Extracts code blocks from ChatGPT/Claude markdown responses and validates each block independently.</p>
+          </div>
+
+          <div class="feature-card rounded-2xl p-6 fade-up">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(168,85,247,0.1);">
+              <i data-lucide="git-commit-horizontal" class="w-6 h-6" style="color: #A855F7;" aria-hidden="true"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" data-i18n="features.precommit.title">Pre-commit Hook</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.precommit.description">Automatic validation on every git commit. Catches issues before they enter your codebase. SQLite cached.</p>
+          </div>
+
+          <div class="feature-card rounded-2xl p-6 fade-up">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(96,165,250,0.1);">
+              <i data-lucide="monitor" class="w-6 h-6" style="color: #60A5FA;" aria-hidden="true"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" data-i18n="features.vscode.title">VS Code Extension</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.vscode.description">Real-time inline diagnostics. Squiggly underlines for errors. Configurable on-save or on-change trigger.</p>
+          </div>
+
+          <div class="feature-card rounded-2xl p-6 fade-up">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(236,72,153,0.1);">
+              <i data-lucide="workflow" class="w-6 h-6" style="color: #EC4899;" aria-hidden="true"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" data-i18n="features.cicd.title">CI/CD Integration</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.cicd.description">GitHub Actions pipeline with SARIF output for Code Scanning. Strict CI mode with --ci flag.</p>
+          </div>
+
+          <div class="feature-card rounded-2xl p-6 fade-up">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(124,58,237,0.1);">
+              <i data-lucide="gauge" class="w-6 h-6" style="color: #7C3AED;" aria-hidden="true"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" data-i18n="features.observability.title">Observability</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.observability.description">/metrics endpoint with Prometheus format. Latency histogram, cache hit rate, validation counts.</p>
+          </div>
+
+          <div class="feature-card rounded-2xl p-6 fade-up">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background-color: rgba(239,68,68,0.1);">
+              <i data-lucide="zap" class="w-6 h-6 text-danger" aria-hidden="true"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" data-i18n="features.performance.title">10x Faster</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--muted);" data-i18n="features.performance.description">Parallel registry validation with asyncio.gather. Up to 10x speedup on multi-file checks.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Pipeline -->
+    <section id="pipeline" class="py-24 px-4" style="background-color: var(--bg);">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 fade-up">
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="pipeline.title">4-Layer Validation Pipeline</h2>
+          <p class="text-lg max-w-2xl mx-auto" style="color: var(--muted);" data-i18n="pipeline.subtitle">Each layer catches different categories of AI hallucinations, from syntax errors to wrong function signatures.</p>
+        </div>
+
+        <!-- SVG Pipeline Visualization -->
+        <div class="mb-12 fade-up">
+          <svg class="pipeline-svg w-full h-auto" viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="4-layer validation pipeline diagram">
+            <!-- Layer 1: Syntax -->
+            <rect x="20" y="80" width="120" height="90" rx="12" fill="var(--surface)" stroke="var(--primary)" stroke-width="2"/>
+            <circle cx="80" cy="110" r="15" fill="rgba(59,130,246,0.2)"/>
+            <path d="M75 110 L78 115 L85 105" stroke="var(--primary)" stroke-width="2" fill="none"/>
+            <text x="80" y="145" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600">Syntax</text>
+            <text x="80" y="160" text-anchor="middle" fill="var(--muted)" font-size="11">tree-sitter</text>
+
+            <!-- Arrow 1 -->
+            <line x1="140" y1="125" x2="180" y2="125" stroke="var(--primary)" stroke-width="2" class="flow-line"/>
+            <polygon points="180,125 175,122 175,128" fill="var(--primary)"/>
+
+            <!-- Layer 2: Imports -->
+            <rect x="190" y="80" width="120" height="90" rx="12" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"/>
+            <circle cx="250" cy="110" r="15" fill="rgba(34,211,238,0.2)"/>
+            <rect x="245" y="105" width="10" height="10" fill="none" stroke="var(--accent)" stroke-width="2"/>
+            <text x="250" y="145" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600">Imports</text>
+            <text x="250" y="160" text-anchor="middle" fill="var(--muted)" font-size="11">PyPI/npm</text>
+
+            <!-- Arrow 2 -->
+            <line x1="310" y1="125" x2="350" y2="125" stroke="var(--accent)" stroke-width="2" class="flow-line"/>
+            <polygon points="350,125 345,122 345,128" fill="var(--accent)"/>
+
+            <!-- Layer 3: Signatures -->
+            <rect x="360" y="80" width="120" height="90" rx="12" fill="var(--surface)" stroke="var(--success)" stroke-width="2"/>
+            <circle cx="420" cy="110" r="15" fill="rgba(34,197,94,0.2)"/>
+            <circle cx="420" cy="110" r="8" fill="none" stroke="var(--success)" stroke-width="2"/>
+            <circle cx="420" cy="110" r="3" fill="var(--success)"/>
+            <text x="420" y="145" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600">Signatures</text>
+            <text x="420" y="160" text-anchor="middle" fill="var(--muted)" font-size="11">Jedi</text>
+
+            <!-- Arrow 3 -->
+            <line x1="480" y1="125" x2="520" y2="125" stroke="var(--success)" stroke-width="2" class="flow-line"/>
+            <polygon points="520,125 515,122 515,128" fill="var(--success)"/>
+
+            <!-- Layer 4: Report -->
+            <rect x="530" y="80" width="120" height="90" rx="12" fill="var(--surface)" stroke="var(--warning)" stroke-width="2"/>
+            <circle cx="590" cy="110" r="15" fill="rgba(245,158,11,0.2)"/>
+            <path d="M590 105 L590 113 M590 117 L590 118" stroke="var(--warning)" stroke-width="2.5" stroke-linecap="round"/>
+            <text x="590" y="145" text-anchor="middle" fill="var(--text)" font-size="14" font-weight="600">Report</text>
+            <text x="590" y="160" text-anchor="middle" fill="var(--muted)" font-size="11">Rich/JSON</text>
+
+            <!-- Animated flow particle -->
+            <circle class="flow-particle" r="4" fill="var(--primary)" opacity="0.8"/>
+
+            <!-- Labels -->
+            <text x="20" y="30" fill="var(--primary)" font-size="12" font-weight="600">Layer 1</text>
+            <text x="190" y="30" fill="var(--accent)" font-size="12" font-weight="600">Layer 2</text>
+            <text x="360" y="30" fill="var(--success)" font-size="12" font-weight="600">Layer 3</text>
+            <text x="530" y="30" fill="var(--warning)" font-size="12" font-weight="600">Layer 4</text>
+
+            <!-- Input/Output -->
+            <text x="10" y="220" fill="var(--muted)" font-size="12">Input: Code</text>
+            <text x="560" y="220" fill="var(--muted)" font-size="12">Output: Validation</text>
+          </svg>
+        </div>
+
+        <!-- Layer Cards -->
+        <div class="grid md:grid-cols-4 gap-6 fade-up">
+          <div class="relative border rounded-2xl p-6 text-center" style="background-color: var(--surface); border-color: var(--border);">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-white text-xs font-bold px-3 py-1 rounded-full" style="background-color: var(--primary);" data-i18n="pipeline.layer1.badge">Layer 1</div>
+            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mt-4 mb-4" style="background-color: rgba(59,130,246,0.1);">
+              <i data-lucide="code-2" class="w-7 h-7 text-primary" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-semibold mb-2" data-i18n="pipeline.layer1.title">Syntax</h3>
+            <p class="text-sm" style="color: var(--muted);" data-i18n="pipeline.layer1.description">tree-sitter AST parsing catches malformed code</p>
+          </div>
+
+          <div class="relative border rounded-2xl p-6 text-center" style="background-color: var(--surface); border-color: var(--border);">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full" style="background-color: var(--accent); color: var(--bg);" data-i18n="pipeline.layer2.badge">Layer 2</div>
+            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mt-4 mb-4" style="background-color: rgba(34,211,238,0.1);">
+              <i data-lucide="package" class="w-7 h-7 text-accent" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-semibold mb-2" data-i18n="pipeline.layer2.title">Imports</h3>
+            <p class="text-sm" style="color: var(--muted);" data-i18n="pipeline.layer2.description">Verifies packages exist on PyPI & npm registries</p>
+          </div>
+
+          <div class="relative border rounded-2xl p-6 text-center" style="background-color: var(--surface); border-color: var(--border);">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full" style="background-color: var(--success); color: var(--bg);" data-i18n="pipeline.layer3.badge">Layer 3</div>
+            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mt-4 mb-4" style="background-color: rgba(34,197,94,0.1);">
+              <i data-lucide="scan-search" class="w-7 h-7 text-success" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-semibold mb-2" data-i18n="pipeline.layer3.title">Signatures</h3>
+            <p class="text-sm" style="color: var(--muted);" data-i18n="pipeline.layer3.description">Validates function calls against real API signatures</p>
+          </div>
+
+          <div class="relative border rounded-2xl p-6 text-center" style="background-color: var(--surface); border-color: var(--border);">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full" style="background-color: var(--warning); color: var(--bg);" data-i18n="pipeline.layer4.badge">Layer 4</div>
+            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mt-4 mb-4" style="background-color: rgba(245,158,11,0.1);">
+              <i data-lucide="alert-triangle" class="w-7 h-7 text-warning" aria-hidden="true"></i>
+            </div>
+            <h3 class="font-semibold mb-2" data-i18n="pipeline.layer4.title">Deprecation</h3>
+            <p class="text-sm" style="color: var(--muted);" data-i18n="pipeline.layer4.description">Flags deprecated patterns with replacement suggestions</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integrations -->
+    <section id="integrations" class="py-24 px-4">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 fade-up">
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="integrations.title">Fits Your Workflow</h2>
+          <p class="text-lg max-w-2xl mx-auto" style="color: var(--muted);" data-i18n="integrations.subtitle">CLI, API server, pre-commit hooks, VS Code extension — use it however you work.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+
+          <!-- CLI -->
+          <div class="border rounded-2xl overflow-hidden fade-up" style="background-color: var(--surface); border-color: var(--border);">
+            <div class="px-6 py-4 border-b flex items-center gap-3" style="border-color: var(--border);">
+              <i data-lucide="terminal" class="w-5 h-5 text-primary" aria-hidden="true"></i>
+              <span class="font-semibold" data-i18n="integrations.cli.title">CLI</span>
+              <span class="text-xs px-2 py-0.5 rounded-full ml-auto" style="background-color: rgba(59,130,246,0.1); color: var(--primary);" data-i18n="integrations.cli.badge">Primary</span>
+            </div>
+            <pre class="p-5 text-sm font-mono leading-relaxed overflow-x-auto" style="color: var(--muted);"><code><span class="text-accent">$</span> firewall check app.py
 <span class="text-accent">$</span> firewall check src/*.py --format json
 <span class="text-accent">$</span> firewall parse response.md
 <span class="text-accent">$</span> cat code.py | firewall check --stdin -l python
 <span class="text-accent">$</span> firewall parse --url https://gist.github.com/...</code></pre>
-        </div>
-
-        <!-- API -->
-        <div class="border rounded-2xl overflow-hidden fade-up" style="background-color: var(--surface); border-color: var(--border);">
-          <div class="px-6 py-4 border-b flex items-center gap-3" style="border-color: var(--border);">
-            <i data-lucide="server" class="w-5 h-5 text-accent"></i>
-            <span class="font-semibold" data-i18n="integrations.api.title">REST API</span>
-            <span class="text-xs px-2 py-0.5 rounded-full ml-auto" style="background-color: rgba(34,211,238,0.1); color: var(--accent);" data-i18n="integrations.api.badge">FastAPI</span>
           </div>
-          <pre class="p-5 text-sm font-mono leading-relaxed overflow-x-auto" style="color: var(--muted);"><code><span class="text-accent">$</span> firewall serve --port 8000
+
+          <!-- API -->
+          <div class="border rounded-2xl overflow-hidden fade-up" style="background-color: var(--surface); border-color: var(--border);">
+            <div class="px-6 py-4 border-b flex items-center gap-3" style="border-color: var(--border);">
+              <i data-lucide="server" class="w-5 h-5 text-accent" aria-hidden="true"></i>
+              <span class="font-semibold" data-i18n="integrations.api.title">REST API</span>
+              <span class="text-xs px-2 py-0.5 rounded-full ml-auto" style="background-color: rgba(34,211,238,0.1); color: var(--accent);" data-i18n="integrations.api.badge">FastAPI</span>
+            </div>
+            <pre class="p-5 text-sm font-mono leading-relaxed overflow-x-auto" style="color: var(--muted);"><code><span class="text-accent">$</span> firewall serve --port 8000
 
 <span class="text-accent">$</span> curl -X POST localhost:8000/validate \
   -H "Content-Type: application/json" \
   -d '{"code": "import fakelib", "language": "python"}'</code></pre>
-        </div>
-
-        <!-- Pre-commit -->
-        <div class="border rounded-2xl overflow-hidden fade-up" style="background-color: var(--surface); border-color: var(--border);">
-          <div class="px-6 py-4 border-b flex items-center gap-3" style="border-color: var(--border);">
-            <i data-lucide="git-commit-horizontal" class="w-5 h-5" style="color: #A855F7;"></i>
-            <span class="font-semibold" data-i18n="integrations.precommit.title">Pre-commit Hook</span>
-            <span class="text-xs px-2 py-0.5 rounded-full ml-auto" style="background-color: rgba(168,85,247,0.1); color: #A855F7;" data-i18n="integrations.precommit.badge">Automatic</span>
           </div>
-          <pre class="p-5 text-sm font-mono leading-relaxed overflow-x-auto" style="color: var(--muted);"><code><span class="text-success"># .pre-commit-config.yaml</span>
+
+          <!-- Pre-commit -->
+          <div class="border rounded-2xl overflow-hidden fade-up" style="background-color: var(--surface); border-color: var(--border);">
+            <div class="px-6 py-4 border-b flex items-center gap-3" style="border-color: var(--border);">
+              <i data-lucide="git-commit-horizontal" class="w-5 h-5" style="color: #A855F7;" aria-hidden="true"></i>
+              <span class="font-semibold" data-i18n="integrations.precommit.title">Pre-commit Hook</span>
+              <span class="text-xs px-2 py-0.5 rounded-full ml-auto" style="background-color: rgba(168,85,247,0.1); color: #A855F7;" data-i18n="integrations.precommit.badge">Automatic</span>
+            </div>
+            <pre class="p-5 text-sm font-mono leading-relaxed overflow-x-auto" style="color: var(--muted);"><code><span class="text-success"># .pre-commit-config.yaml</span>
 repos:
   - repo: https://github.com/tranhoangtu-it/...
     rev: v0.1.0
     hooks:
       - id: firewall-check      <span class="text-muted"># Python</span>
       - id: firewall-check-js   <span class="text-muted"># JS/TS</span></code></pre>
-        </div>
-
-        <!-- VS Code -->
-        <div class="border rounded-2xl overflow-hidden fade-up" style="background-color: var(--surface); border-color: var(--border);">
-          <div class="px-6 py-4 border-b flex items-center gap-3" style="border-color: var(--border);">
-            <i data-lucide="monitor" class="w-5 h-5" style="color: #60A5FA;"></i>
-            <span class="font-semibold" data-i18n="integrations.vscode.title">VS Code Extension</span>
-            <span class="text-xs px-2 py-0.5 rounded-full ml-auto" style="background-color: rgba(96,165,250,0.1); color: #60A5FA;" data-i18n="integrations.vscode.badge">Real-time</span>
           </div>
-          <div class="p-5 text-sm leading-relaxed" style="color: var(--muted);">
-            <div class="flex items-start gap-3 mb-3">
-              <i data-lucide="check" class="w-4 h-4 text-success mt-0.5 shrink-0"></i>
-              <span data-i18n="integrations.vscode.feature1">Inline diagnostics with squiggly underlines</span>
+
+          <!-- VS Code -->
+          <div class="border rounded-2xl overflow-hidden fade-up" style="background-color: var(--surface); border-color: var(--border);">
+            <div class="px-6 py-4 border-b flex items-center gap-3" style="border-color: var(--border);">
+              <i data-lucide="monitor" class="w-5 h-5" style="color: #60A5FA;" aria-hidden="true"></i>
+              <span class="font-semibold" data-i18n="integrations.vscode.title">VS Code Extension</span>
+              <span class="text-xs px-2 py-0.5 rounded-full ml-auto" style="background-color: rgba(96,165,250,0.1); color: #60A5FA;" data-i18n="integrations.vscode.badge">Real-time</span>
             </div>
-            <div class="flex items-start gap-3 mb-3">
-              <i data-lucide="check" class="w-4 h-4 text-success mt-0.5 shrink-0"></i>
-              <span data-i18n="integrations.vscode.feature2">Configurable trigger: on-save or on-change</span>
-            </div>
-            <div class="flex items-start gap-3 mb-3">
-              <i data-lucide="check" class="w-4 h-4 text-success mt-0.5 shrink-0"></i>
-              <span data-i18n="integrations.vscode.feature3">Status bar with validation state</span>
-            </div>
-            <div class="flex items-start gap-3">
-              <i data-lucide="check" class="w-4 h-4 text-success mt-0.5 shrink-0"></i>
-              <span data-i18n="integrations.vscode.feature4">Python, JavaScript, TypeScript support</span>
+            <div class="p-5 text-sm leading-relaxed" style="color: var(--muted);">
+              <div class="flex items-start gap-3 mb-3">
+                <i data-lucide="check" class="w-4 h-4 text-success mt-0.5 shrink-0" aria-hidden="true"></i>
+                <span data-i18n="integrations.vscode.feature1">Inline diagnostics with squiggly underlines</span>
+              </div>
+              <div class="flex items-start gap-3 mb-3">
+                <i data-lucide="check" class="w-4 h-4 text-success mt-0.5 shrink-0" aria-hidden="true"></i>
+                <span data-i18n="integrations.vscode.feature2">Configurable trigger: on-save or on-change</span>
+              </div>
+              <div class="flex items-start gap-3 mb-3">
+                <i data-lucide="check" class="w-4 h-4 text-success mt-0.5 shrink-0" aria-hidden="true"></i>
+                <span data-i18n="integrations.vscode.feature3">Status bar with validation state</span>
+              </div>
+              <div class="flex items-start gap-3">
+                <i data-lucide="check" class="w-4 h-4 text-success mt-0.5 shrink-0" aria-hidden="true"></i>
+                <span data-i18n="integrations.vscode.feature4">Python, JavaScript, TypeScript support</span>
+              </div>
             </div>
           </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section id="quickstart" class="py-24 px-4" style="background-color: var(--bg);">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12 fade-up">
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="quickstart.title">Get Started in 30 Seconds</h2>
         </div>
 
-      </div>
-    </div>
-  </section>
-
-  <!-- Quick Start -->
-  <section id="quickstart" class="py-24 px-4" style="background-color: var(--bg);">
-    <div class="max-w-4xl mx-auto">
-      <div class="text-center mb-12 fade-up">
-        <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="quickstart.title">Get Started in 30 Seconds</h2>
-      </div>
-
-      <div class="border rounded-2xl overflow-hidden code-glow fade-up" style="background-color: var(--surface); border-color: var(--border);">
-        <div class="flex items-center gap-2 px-5 py-3 border-b" style="background-color: rgba(15,23,42,0.5); border-color: var(--border);">
-          <span class="w-3 h-3 rounded-full" style="background-color: rgba(239,68,68,0.8);"></span>
-          <span class="w-3 h-3 rounded-full" style="background-color: rgba(245,158,11,0.8);"></span>
-          <span class="w-3 h-3 rounded-full" style="background-color: rgba(34,197,94,0.8);"></span>
-          <span class="ml-3 text-xs font-mono" style="color: var(--muted);">terminal</span>
-        </div>
-        <pre class="p-6 text-sm font-mono leading-loose overflow-x-auto"><code><span class="text-muted"># Install</span>
+        <div class="border rounded-2xl overflow-hidden code-glow fade-up" style="background-color: var(--surface); border-color: var(--border);">
+          <div class="flex items-center gap-2 px-5 py-3 border-b" style="background-color: rgba(15,23,42,0.5); border-color: var(--border);">
+            <span class="w-3 h-3 rounded-full" style="background-color: rgba(239,68,68,0.8);" aria-hidden="true"></span>
+            <span class="w-3 h-3 rounded-full" style="background-color: rgba(245,158,11,0.8);" aria-hidden="true"></span>
+            <span class="w-3 h-3 rounded-full" style="background-color: rgba(34,197,94,0.8);" aria-hidden="true"></span>
+            <span class="ml-3 text-xs font-mono" style="color: var(--muted);">terminal</span>
+          </div>
+          <pre class="p-6 text-sm font-mono leading-loose overflow-x-auto"><code><span class="text-muted"># Install</span>
 <span class="text-accent">$</span> pip install -e "git+https://github.com/tranhoangtu-it/AI-Hallucination-Firewall.git#egg=hallucination-firewall"
 
 <span class="text-muted"># Validate a file</span>
@@ -650,49 +536,184 @@ repos:
 
 <span class="text-muted"># JSON output for CI/CD</span>
 <span class="text-accent">$</span> firewall check --format json src/*.py</code></pre>
-      </div>
+        </div>
 
-      <!-- Languages -->
-      <div class="flex flex-wrap justify-center gap-4 mt-10 fade-up">
-        <div class="flex items-center gap-2 border rounded-xl px-4 py-2 text-sm cursor-pointer hover:border-primary transition-colors" style="background-color: var(--surface); border-color: var(--border);">
-          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="#3776AB"><path d="M14.31.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.83l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.68H3.23l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.25-.02h.16zm-1.47 5.13H11.5v-.15l.02-.12.04-.12.06-.1.09-.08.12-.06.15-.03h.36l.17.04.13.06.1.08.07.1.04.11.02.12V5.3l-.02.12-.04.12-.06.1-.09.08-.12.06-.16.04h-.36l-.16-.04-.12-.06-.1-.08-.06-.1-.04-.12-.01-.12zM20.81 15.61v3.68l-.02.21-.05.32-.1.36-.16.4-.24.42-.33.42-.44.4-.57.36-.71.32-.87.24-1.04.16-1.22.06-1.23-.05-1.06-.14-.87-.21-.73-.28-.59-.32-.46-.35-.36-.36-.26-.36-.18-.35-.12-.32-.07-.28-.03-.21h3.26v.14l.02.11.04.12.06.1.09.08.12.06.15.04h.37l.16-.04.12-.06.1-.08.07-.1.04-.12.01-.11V15.6l-.01-.11-.04-.12-.06-.1-.1-.08-.12-.06-.16-.04h-.36l-.15.04-.12.06-.09.08-.06.1-.04.12-.02.12v.14H13.9V12.3l.05-.63.13-.55.21-.46.26-.38.3-.31.33-.25.35-.19.35-.14.33-.1.3-.07.26-.04.21-.02h5.28l.21.03.28.07.32.12.35.18.36.26.36.36.35.46.32.59.28.73.21.88.14 1.05.05 1.23-.06 1.22-.16 1.04-.24.87-.32.71-.36.57-.4.44-.42.33-.42.24-.4.16-.36.1-.32.05-.25.02h-.16z"/></svg>
-          Python
-        </div>
-        <div class="flex items-center gap-2 border rounded-xl px-4 py-2 text-sm cursor-pointer hover:border-primary transition-colors" style="background-color: var(--surface); border-color: var(--border);">
-          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="#F7DF1E"><path d="M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.405-.6-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z"/></svg>
-          JavaScript
-        </div>
-        <div class="flex items-center gap-2 border rounded-xl px-4 py-2 text-sm cursor-pointer hover:border-primary transition-colors" style="background-color: var(--surface); border-color: var(--border);">
-          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="#3178C6"><path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.093 5.093 0 0 0-.717-.26 5.453 5.453 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.888.888 0 0 0-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.42.276.69.394c.268.118.58.232.936.341.54.164.99.342 1.356.532.368.19.67.407.91.65.24.243.415.516.523.819.108.303.162.648.162 1.034 0 .56-.107 1.03-.322 1.41a2.637 2.637 0 0 1-.882.95c-.37.233-.807.404-1.312.51-.504.108-1.04.16-1.607.16-.556 0-1.093-.052-1.611-.157-.518-.104-.987-.268-1.409-.49v-2.59c.218.165.462.316.732.452.272.137.56.248.87.333.31.085.628.15.954.194.326.045.621.067.886.067.3 0 .552-.025.756-.075a1.55 1.55 0 0 0 .49-.203.777.777 0 0 0 .272-.315.827.827 0 0 0 .085-.37c0-.216-.07-.4-.213-.55a2.228 2.228 0 0 0-.611-.45 8.376 8.376 0 0 0-.963-.41 7.673 7.673 0 0 1-1.263-.57 3.86 3.86 0 0 1-.89-.694 2.538 2.538 0 0 1-.526-.86c-.115-.324-.173-.693-.173-1.106 0-.53.108-.987.322-1.37.215-.384.508-.706.879-.964.371-.259.812-.453 1.322-.581a6.36 6.36 0 0 1 1.66-.21zm-9.98.02h7.65v2.1H13.5v7.13h-2.56v-7.13H8.508z"/></svg>
-          TypeScript
+        <!-- Languages -->
+        <div class="flex flex-wrap justify-center gap-4 mt-10 fade-up">
+          <div class="flex items-center gap-2 border rounded-xl px-4 py-2 text-sm cursor-pointer hover:border-primary transition-colors" style="background-color: var(--surface); border-color: var(--border);">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="#3776AB" aria-hidden="true"><path d="M14.31.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.83l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.68H3.23l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.25-.02h.16zm-1.47 5.13H11.5v-.15l.02-.12.04-.12.06-.1.09-.08.12-.06.15-.03h.36l.17.04.13.06.1.08.07.1.04.11.02.12V5.3l-.02.12-.04.12-.06.1-.09.08-.12.06-.16.04h-.36l-.16-.04-.12-.06-.1-.08-.06-.1-.04-.12-.01-.12zM20.81 15.61v3.68l-.02.21-.05.32-.1.36-.16.4-.24.42-.33.42-.44.4-.57.36-.71.32-.87.24-1.04.16-1.22.06-1.23-.05-1.06-.14-.87-.21-.73-.28-.59-.32-.46-.35-.36-.36-.26-.36-.18-.35-.12-.32-.07-.28-.03-.21h3.26v.14l.02.11.04.12.06.1.09.08.12.06.15.04h.37l.16-.04.12-.06.1-.08.07-.1.04-.12.01-.11V15.6l-.01-.11-.04-.12-.06-.1-.1-.08-.12-.06-.16-.04h-.36l-.15.04-.12.06-.09.08-.06.1-.04.12-.02.12v.14H13.9V12.3l.05-.63.13-.55.21-.46.26-.38.3-.31.33-.25.35-.19.35-.14.33-.1.3-.07.26-.04.21-.02h5.28l.21.03.28.07.32.12.35.18.36.26.36.36.35.46.32.59.28.73.21.88.14 1.05.05 1.23-.06 1.22-.16 1.04-.24.87-.32.71-.36.57-.4.44-.42.33-.42.24-.4.16-.36.1-.32.05-.25.02h-.16z"/></svg>
+            Python
+          </div>
+          <div class="flex items-center gap-2 border rounded-xl px-4 py-2 text-sm cursor-pointer hover:border-primary transition-colors" style="background-color: var(--surface); border-color: var(--border);">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="#F7DF1E" aria-hidden="true"><path d="M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.405-.6-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z"/></svg>
+            JavaScript
+          </div>
+          <div class="flex items-center gap-2 border rounded-xl px-4 py-2 text-sm cursor-pointer hover:border-primary transition-colors" style="background-color: var(--surface); border-color: var(--border);">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="#3178C6" aria-hidden="true"><path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.093 5.093 0 0 0-.717-.26 5.453 5.453 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.888.888 0 0 0-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.42.276.69.394c.268.118.58.232.936.341.54.164.99.342 1.356.532.368.19.67.407.91.65.24.243.415.516.523.819.108.303.162.648.162 1.034 0 .56-.107 1.03-.322 1.41a2.637 2.637 0 0 1-.882.95c-.37.233-.807.404-1.312.51-.504.108-1.04.16-1.607.16-.556 0-1.093-.052-1.611-.157-.518-.104-.987-.268-1.409-.49v-2.59c.218.165.462.316.732.452.272.137.56.248.87.333.31.085.628.15.954.194.326.045.621.067.886.067.3 0 .552-.025.756-.075a1.55 1.55 0 0 0 .49-.203.777.777 0 0 0 .272-.315.827.827 0 0 0 .085-.37c0-.216-.07-.4-.213-.55a2.228 2.228 0 0 0-.611-.45 8.376 8.376 0 0 0-.963-.41 7.673 7.673 0 0 1-1.263-.57 3.86 3.86 0 0 1-.89-.694 2.538 2.538 0 0 1-.526-.86c-.115-.324-.173-.693-.173-1.106 0-.53.108-.987.322-1.37.215-.384.508-.706.879-.964.371-.259.812-.453 1.322-.581a6.36 6.36 0 0 1 1.66-.21zm-9.98.02h7.65v2.1H13.5v7.13h-2.56v-7.13H8.508z"/></svg>
+            TypeScript
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- CTA -->
-  <section class="py-20 px-4">
-    <div class="max-w-4xl mx-auto text-center fade-up">
-      <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="cta.title">Stop AI Hallucinations Today</h2>
-      <p class="text-lg mb-8 max-w-xl mx-auto" style="color: var(--muted);" data-i18n="cta.subtitle">Open source, MIT licensed, zero config. Works with ChatGPT, Claude, Copilot, and any LLM output.</p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <a href="https://github.com/tranhoangtu-it/AI-Hallucination-Firewall" target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-xl text-lg transition-colors cursor-pointer" style="background-color: var(--primary);">
-          <i data-lucide="github" class="w-5 h-5"></i>
-          <span data-i18n="cta.github">Star on GitHub</span>
-        </a>
-        <a href="https://github.com/tranhoangtu-it/AI-Hallucination-Firewall/releases/tag/v0.1.0" target="_blank" rel="noopener" class="inline-flex items-center gap-2 border font-semibold px-8 py-4 rounded-xl text-lg transition-colors cursor-pointer" style="background-color: var(--surface); border-color: var(--border); color: var(--text);">
-          <i data-lucide="download" class="w-5 h-5"></i>
-          <span data-i18n="cta.download">Download v0.1.0</span>
-        </a>
+    <!-- FAQ -->
+    <section id="faq" class="py-24 px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12 fade-up">
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="faq.title">Frequently Asked Questions</h2>
+          <p class="text-lg" style="color: var(--muted);" data-i18n="faq.subtitle">Everything you need to know about using AI Hallucination Firewall.</p>
+        </div>
+
+        <div class="space-y-4 fade-up">
+          <details class="rounded-xl p-5">
+            <summary class="font-semibold cursor-pointer flex items-center justify-between" data-i18n="faq.q1">
+              Does it slow down my CI pipeline?
+              <i data-lucide="chevron-down" class="w-5 h-5 text-muted" aria-hidden="true"></i>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed" style="color: var(--muted);" data-i18n="faq.a1">
+              No, average validation is under 2 seconds per file. Parallel async checks ensure minimal overhead.
+            </p>
+          </details>
+
+          <details class="rounded-xl p-5">
+            <summary class="font-semibold cursor-pointer flex items-center justify-between" data-i18n="faq.q2">
+              What about false positives?
+              <i data-lucide="chevron-down" class="w-5 h-5 text-muted" aria-hidden="true"></i>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed" style="color: var(--muted);" data-i18n="faq.a2">
+              Fail-open policy. Unknown functions are skipped, not flagged. We only report what we can verify is wrong.
+            </p>
+          </details>
+
+          <details class="rounded-xl p-5">
+            <summary class="font-semibold cursor-pointer flex items-center justify-between" data-i18n="faq.q3">
+              Which languages are supported?
+              <i data-lucide="chevron-down" class="w-5 h-5 text-muted" aria-hidden="true"></i>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed" style="color: var(--muted);" data-i18n="faq.a3">
+              Python, JavaScript, TypeScript. More languages coming soon based on community feedback.
+            </p>
+          </details>
+
+          <details class="rounded-xl p-5">
+            <summary class="font-semibold cursor-pointer flex items-center justify-between" data-i18n="faq.q4">
+              How is this different from ESLint/Pylint?
+              <i data-lucide="chevron-down" class="w-5 h-5 text-muted" aria-hidden="true"></i>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed" style="color: var(--muted);" data-i18n="faq.a4">
+              Those check code style. We check if AI-generated APIs actually exist in the real world.
+            </p>
+          </details>
+
+          <details class="rounded-xl p-5">
+            <summary class="font-semibold cursor-pointer flex items-center justify-between" data-i18n="faq.q5">
+              Can I use it offline?
+              <i data-lucide="chevron-down" class="w-5 h-5 text-muted" aria-hidden="true"></i>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed" style="color: var(--muted);" data-i18n="faq.a5">
+              Syntax and signature checks work offline. Import checks need network for registry lookups (with caching).
+            </p>
+          </details>
+
+          <details class="rounded-xl p-5">
+            <summary class="font-semibold cursor-pointer flex items-center justify-between" data-i18n="faq.q6">
+              Is it safe to use?
+              <i data-lucide="chevron-down" class="w-5 h-5 text-muted" aria-hidden="true"></i>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed" style="color: var(--muted);" data-i18n="faq.a6">
+              Read-only validation. Never executes your code. Restricted to allowlisted stdlib modules for safety.
+            </p>
+          </details>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- Comparison Table -->
+    <section class="py-24 px-4" style="background-color: var(--bg);">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-12 fade-up">
+          <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="comparison.title">Why AI Hallucination Firewall?</h2>
+          <p class="text-lg" style="color: var(--muted);" data-i18n="comparison.subtitle">Built specifically for AI-generated code validation.</p>
+        </div>
+
+        <div class="fade-up overflow-x-auto">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th data-i18n="comparison.feature">Feature</th>
+                <th data-i18n="comparison.firewall">Hallucination Firewall</th>
+                <th data-i18n="comparison.linters">ESLint/Pylint</th>
+                <th data-i18n="comparison.manual">Manual Review</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-i18n="comparison.row1">Detects hallucinated APIs</td>
+                <td><span class="text-success font-bold" data-i18n="comparison.yes">✓</span></td>
+                <td><span class="text-danger font-bold" data-i18n="comparison.no">✗</span></td>
+                <td><span class="text-muted" data-i18n="comparison.sometimes">Sometimes</span></td>
+              </tr>
+              <tr>
+                <td data-i18n="comparison.row2">Registry verification</td>
+                <td><span class="text-success font-bold" data-i18n="comparison.yes">✓</span></td>
+                <td><span class="text-danger font-bold" data-i18n="comparison.no">✗</span></td>
+                <td><span class="text-danger font-bold" data-i18n="comparison.no">✗</span></td>
+              </tr>
+              <tr>
+                <td data-i18n="comparison.row3">Signature validation</td>
+                <td><span class="text-success font-bold" data-i18n="comparison.yes">✓</span></td>
+                <td><span class="text-danger font-bold" data-i18n="comparison.no">✗</span></td>
+                <td><span class="text-muted" data-i18n="comparison.slow">Slow</span></td>
+              </tr>
+              <tr>
+                <td data-i18n="comparison.row4">Works with any LLM</td>
+                <td><span class="text-success font-bold" data-i18n="comparison.yes">✓</span></td>
+                <td><span class="text-muted" data-i18n="comparison.na">N/A</span></td>
+                <td><span class="text-success font-bold" data-i18n="comparison.yes">✓</span></td>
+              </tr>
+              <tr>
+                <td data-i18n="comparison.row5">Automated CI integration</td>
+                <td><span class="text-success font-bold" data-i18n="comparison.yes">✓</span></td>
+                <td><span class="text-success font-bold" data-i18n="comparison.yes">✓</span></td>
+                <td><span class="text-danger font-bold" data-i18n="comparison.no">✗</span></td>
+              </tr>
+              <tr>
+                <td data-i18n="comparison.row6">Zero config</td>
+                <td><span class="text-success font-bold" data-i18n="comparison.yes">✓</span></td>
+                <td><span class="text-danger font-bold" data-i18n="comparison.no">✗</span></td>
+                <td><span class="text-muted" data-i18n="comparison.na">N/A</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-20 px-4">
+      <div class="max-w-4xl mx-auto text-center fade-up">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4" data-i18n="cta.title">Stop AI Hallucinations Today</h2>
+        <p class="text-lg mb-8 max-w-xl mx-auto" style="color: var(--muted);" data-i18n="cta.subtitle">Open source, MIT licensed, zero config. Works with ChatGPT, Claude, Copilot, and any LLM output.</p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="https://github.com/tranhoangtu-it/AI-Hallucination-Firewall" target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-white font-semibold px-8 py-4 rounded-xl text-lg transition-colors cursor-pointer" style="background-color: var(--primary);" aria-label="Star project on GitHub">
+            <i data-lucide="github" class="w-5 h-5" aria-hidden="true"></i>
+            <span data-i18n="cta.github">Star on GitHub</span>
+          </a>
+          <a href="https://github.com/tranhoangtu-it/AI-Hallucination-Firewall/releases/tag/v0.1.0" target="_blank" rel="noopener" class="inline-flex items-center gap-2 border font-semibold px-8 py-4 rounded-xl text-lg transition-colors cursor-pointer" style="background-color: var(--surface); border-color: var(--border); color: var(--text);" aria-label="Download version 0.1.0">
+            <i data-lucide="download" class="w-5 h-5" aria-hidden="true"></i>
+            <span data-i18n="cta.download">Download v0.1.0</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
 
   <!-- Footer -->
-  <footer class="border-t py-8 px-4" style="border-color: var(--border);">
+  <footer class="border-t py-8 px-4" style="border-color: var(--border);" role="contentinfo">
     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm" style="color: var(--muted);">
       <div class="flex items-center gap-2">
-        <i data-lucide="shield-check" class="w-4 h-4 text-primary"></i>
+        <i data-lucide="shield-check" class="w-4 h-4 text-primary" aria-hidden="true"></i>
         <span data-i18n="footer.title">AI Hallucination Firewall v0.1.0</span>
       </div>
       <div>
@@ -703,357 +724,7 @@ repos:
     </div>
   </footer>
 
-  <!-- Scripts -->
-  <script>
-    // Translations
-    const translations = {
-      en: {
-        "nav.title": "Hallucination Firewall",
-        "nav.features": "Features",
-        "nav.pipeline": "Pipeline",
-        "nav.integrations": "Integrations",
-        "nav.quickstart": "Quick Start",
-        "hero.badge": "v0.1.0 — Open Source",
-        "hero.title": "Type Checker",
-        "hero.subtitle": "for AI Output",
-        "hero.description": "Validate AI-generated code before it enters your codebase. Catches hallucinated APIs, wrong signatures, and nonexistent packages across Python, JavaScript, and TypeScript.",
-        "hero.cta_start": "Get Started",
-        "hero.cta_source": "View Source",
-        "hero.stats.layers": "Validation Layers",
-        "hero.stats.languages": "Languages",
-        "hero.stats.tests": "Tests Passing",
-        "hero.stats.license": "License",
-        "features.title": "Everything You Need",
-        "features.subtitle": "Four validation layers plus seamless integrations for your entire development workflow.",
-        "features.ast.title": "AST Syntax Validation",
-        "features.ast.description": "Tree-sitter powered parsing catches malformed code in Python, JavaScript, and TypeScript before it runs.",
-        "features.import.title": "Import Verification",
-        "features.import.description": "Validates every import against PyPI and npm registries. Catches hallucinated packages instantly.",
-        "features.signature.title": "Signature Checking",
-        "features.signature.description": "Jedi-powered introspection validates function parameters, required args, and keyword arguments against real APIs.",
-        "features.parser.title": "LLM Output Parser",
-        "features.parser.description": "Extracts code blocks from ChatGPT/Claude markdown responses and validates each block independently.",
-        "features.precommit.title": "Pre-commit Hook",
-        "features.precommit.description": "Automatic validation on every git commit. Catches issues before they enter your codebase. SQLite cached.",
-        "features.vscode.title": "VS Code Extension",
-        "features.vscode.description": "Real-time inline diagnostics. Squiggly underlines for errors. Configurable on-save or on-change trigger.",
-        "pipeline.title": "4-Layer Validation Pipeline",
-        "pipeline.subtitle": "Each layer catches different categories of AI hallucinations, from syntax errors to wrong function signatures.",
-        "pipeline.layer1.badge": "Layer 1",
-        "pipeline.layer1.title": "Syntax",
-        "pipeline.layer1.description": "tree-sitter AST parsing catches malformed code",
-        "pipeline.layer2.badge": "Layer 2",
-        "pipeline.layer2.title": "Imports",
-        "pipeline.layer2.description": "Verifies packages exist on PyPI & npm registries",
-        "pipeline.layer3.badge": "Layer 3",
-        "pipeline.layer3.title": "Signatures",
-        "pipeline.layer3.description": "Validates function calls against real API signatures",
-        "pipeline.layer4.badge": "Layer 4",
-        "pipeline.layer4.title": "Deprecation",
-        "pipeline.layer4.description": "Flags deprecated patterns with replacement suggestions",
-        "integrations.title": "Fits Your Workflow",
-        "integrations.subtitle": "CLI, API server, pre-commit hooks, VS Code extension — use it however you work.",
-        "integrations.cli.title": "CLI",
-        "integrations.cli.badge": "Primary",
-        "integrations.api.title": "REST API",
-        "integrations.api.badge": "FastAPI",
-        "integrations.precommit.title": "Pre-commit Hook",
-        "integrations.precommit.badge": "Automatic",
-        "integrations.vscode.title": "VS Code Extension",
-        "integrations.vscode.badge": "Real-time",
-        "integrations.vscode.feature1": "Inline diagnostics with squiggly underlines",
-        "integrations.vscode.feature2": "Configurable trigger: on-save or on-change",
-        "integrations.vscode.feature3": "Status bar with validation state",
-        "integrations.vscode.feature4": "Python, JavaScript, TypeScript support",
-        "quickstart.title": "Get Started in 30 Seconds",
-        "cta.title": "Stop AI Hallucinations Today",
-        "cta.subtitle": "Open source, MIT licensed, zero config. Works with ChatGPT, Claude, Copilot, and any LLM output.",
-        "cta.github": "Star on GitHub",
-        "cta.download": "Download v0.1.0",
-        "footer.title": "AI Hallucination Firewall v0.1.0",
-        "footer.license": "MIT License",
-        "footer.made_by": "Made by"
-      },
-      vi: {
-        "nav.title": "Tường lửa Hallucination",
-        "nav.features": "Tính năng",
-        "nav.pipeline": "Pipeline",
-        "nav.integrations": "Tích hợp",
-        "nav.quickstart": "Bắt đầu nhanh",
-        "hero.badge": "v0.1.0 — Mã nguồn mở",
-        "hero.title": "Bộ Kiểm Tra Code AI",
-        "hero.subtitle": "cho AI Output",
-        "hero.description": "Xác thực code do AI tạo trước khi đưa vào dự án của bạn. Phát hiện API ảo, tham số sai và package không tồn tại trong Python, JavaScript và TypeScript.",
-        "hero.cta_start": "Bắt đầu",
-        "hero.cta_source": "Xem mã nguồn",
-        "hero.stats.layers": "Lớp xác thực",
-        "hero.stats.languages": "Ngôn ngữ",
-        "hero.stats.tests": "Tests đạt",
-        "hero.stats.license": "Giấy phép",
-        "features.title": "Mọi thứ bạn cần",
-        "features.subtitle": "Bốn lớp xác thực cùng tích hợp liền mạch cho toàn bộ quy trình phát triển của bạn.",
-        "features.ast.title": "Xác thực cú pháp AST",
-        "features.ast.description": "Phân tích cú pháp tree-sitter phát hiện code lỗi trong Python, JavaScript và TypeScript trước khi chạy.",
-        "features.import.title": "Xác minh Import",
-        "features.import.description": "Xác thực mọi import với PyPI và npm registries. Phát hiện ngay package ảo.",
-        "features.signature.title": "Kiểm tra Signature",
-        "features.signature.description": "Jedi-powered introspection xác thực tham số hàm, tham số bắt buộc và keyword arguments với API thật.",
-        "features.parser.title": "Trình phân tích LLM",
-        "features.parser.description": "Trích xuất code blocks từ markdown ChatGPT/Claude và xác thực từng block độc lập.",
-        "features.precommit.title": "Pre-commit Hook",
-        "features.precommit.description": "Tự động xác thực mỗi lần git commit. Phát hiện lỗi trước khi vào codebase. SQLite cached.",
-        "features.vscode.title": "Extension VS Code",
-        "features.vscode.description": "Chẩn đoán inline thời gian thực. Gạch dưới lỗi. Trigger on-save hoặc on-change.",
-        "pipeline.title": "Pipeline xác thực 4 lớp",
-        "pipeline.subtitle": "Mỗi lớp phát hiện các loại hallucination AI khác nhau, từ lỗi cú pháp đến signature sai.",
-        "pipeline.layer1.badge": "Lớp 1",
-        "pipeline.layer1.title": "Cú pháp",
-        "pipeline.layer1.description": "Phân tích AST tree-sitter phát hiện code lỗi",
-        "pipeline.layer2.badge": "Lớp 2",
-        "pipeline.layer2.title": "Imports",
-        "pipeline.layer2.description": "Xác minh package tồn tại trên PyPI & npm registries",
-        "pipeline.layer3.badge": "Lớp 3",
-        "pipeline.layer3.title": "Signatures",
-        "pipeline.layer3.description": "Xác thực function calls với API signatures thật",
-        "pipeline.layer4.badge": "Lớp 4",
-        "pipeline.layer4.title": "Deprecation",
-        "pipeline.layer4.description": "Đánh dấu patterns lỗi thời với gợi ý thay thế",
-        "integrations.title": "Phù hợp quy trình của bạn",
-        "integrations.subtitle": "CLI, API server, pre-commit hooks, VS Code extension — dùng theo cách bạn làm việc.",
-        "integrations.cli.title": "CLI",
-        "integrations.cli.badge": "Chính",
-        "integrations.api.title": "REST API",
-        "integrations.api.badge": "FastAPI",
-        "integrations.precommit.title": "Pre-commit Hook",
-        "integrations.precommit.badge": "Tự động",
-        "integrations.vscode.title": "Extension VS Code",
-        "integrations.vscode.badge": "Thời gian thực",
-        "integrations.vscode.feature1": "Chẩn đoán inline với gạch dưới lỗi",
-        "integrations.vscode.feature2": "Trigger cấu hình: on-save hoặc on-change",
-        "integrations.vscode.feature3": "Status bar với trạng thái xác thực",
-        "integrations.vscode.feature4": "Hỗ trợ Python, JavaScript, TypeScript",
-        "quickstart.title": "Bắt đầu trong 30 giây",
-        "cta.title": "Dừng AI Hallucinations hôm nay",
-        "cta.subtitle": "Mã nguồn mở, giấy phép MIT, không cần config. Hoạt động với ChatGPT, Claude, Copilot và mọi LLM output.",
-        "cta.github": "Star trên GitHub",
-        "cta.download": "Tải v0.1.0",
-        "footer.title": "AI Hallucination Firewall v0.1.0",
-        "footer.license": "Giấy phép MIT",
-        "footer.made_by": "Tạo bởi"
-      },
-      ja: {
-        "nav.title": "Hallucination Firewall",
-        "nav.features": "機能",
-        "nav.pipeline": "パイプライン",
-        "nav.integrations": "統合",
-        "nav.quickstart": "クイックスタート",
-        "hero.badge": "v0.1.0 — オープンソース",
-        "hero.title": "AI出力の型チェッカー",
-        "hero.subtitle": "for AI Output",
-        "hero.description": "AIが生成したコードをコードベースに入る前に検証。Python、JavaScript、TypeScriptで幻覚API、間違った署名、存在しないパッケージを検出。",
-        "hero.cta_start": "始める",
-        "hero.cta_source": "ソースを見る",
-        "hero.stats.layers": "検証レイヤー",
-        "hero.stats.languages": "言語",
-        "hero.stats.tests": "テスト合格",
-        "hero.stats.license": "ライセンス",
-        "features.title": "必要なすべて",
-        "features.subtitle": "4つの検証レイヤーと開発ワークフロー全体のシームレスな統合。",
-        "features.ast.title": "AST構文検証",
-        "features.ast.description": "Tree-sitterパーサーがPython、JavaScript、TypeScriptの不正なコードを実行前に検出。",
-        "features.import.title": "インポート検証",
-        "features.import.description": "すべてのインポートをPyPIとnpmレジストリで検証。幻覚パッケージを即座に検出。",
-        "features.signature.title": "署名チェック",
-        "features.signature.description": "Jediパワードイントロスペクションが関数パラメータ、必須引数、キーワード引数を実際のAPIで検証。",
-        "features.parser.title": "LLM出力パーサー",
-        "features.parser.description": "ChatGPT/Claudeマークダウンレスポンスからコードブロックを抽出し、各ブロックを独立して検証。",
-        "features.precommit.title": "Pre-commitフック",
-        "features.precommit.description": "すべてのgitコミットで自動検証。コードベースに入る前に問題を検出。SQLiteキャッシュ。",
-        "features.vscode.title": "VS Code拡張機能",
-        "features.vscode.description": "リアルタイムインライン診断。エラーの波線下線。保存時または変更時のトリガー設定可能。",
-        "pipeline.title": "4層検証パイプライン",
-        "pipeline.subtitle": "各レイヤーは構文エラーから間違った関数署名まで、異なるカテゴリのAI幻覚を検出。",
-        "pipeline.layer1.badge": "レイヤー 1",
-        "pipeline.layer1.title": "構文",
-        "pipeline.layer1.description": "tree-sitter AST解析が不正なコードを検出",
-        "pipeline.layer2.badge": "レイヤー 2",
-        "pipeline.layer2.title": "インポート",
-        "pipeline.layer2.description": "PyPI & npmレジストリでパッケージ存在を検証",
-        "pipeline.layer3.badge": "レイヤー 3",
-        "pipeline.layer3.title": "署名",
-        "pipeline.layer3.description": "実際のAPI署名で関数呼び出しを検証",
-        "pipeline.layer4.badge": "レイヤー 4",
-        "pipeline.layer4.title": "非推奨",
-        "pipeline.layer4.description": "非推奨パターンを置換提案でフラグ",
-        "integrations.title": "ワークフローに適合",
-        "integrations.subtitle": "CLI、APIサーバー、pre-commitフック、VS Code拡張機能 — あなたの働き方で使用。",
-        "integrations.cli.title": "CLI",
-        "integrations.cli.badge": "プライマリ",
-        "integrations.api.title": "REST API",
-        "integrations.api.badge": "FastAPI",
-        "integrations.precommit.title": "Pre-commitフック",
-        "integrations.precommit.badge": "自動",
-        "integrations.vscode.title": "VS Code拡張機能",
-        "integrations.vscode.badge": "リアルタイム",
-        "integrations.vscode.feature1": "波線下線付きインライン診断",
-        "integrations.vscode.feature2": "設定可能なトリガー：保存時または変更時",
-        "integrations.vscode.feature3": "検証状態付きステータスバー",
-        "integrations.vscode.feature4": "Python、JavaScript、TypeScriptサポート",
-        "quickstart.title": "30秒で始める",
-        "cta.title": "今日AI幻覚を止める",
-        "cta.subtitle": "オープンソース、MITライセンス、設定不要。ChatGPT、Claude、Copilot、すべてのLLM出力で動作。",
-        "cta.github": "GitHubでスター",
-        "cta.download": "v0.1.0をダウンロード",
-        "footer.title": "AI Hallucination Firewall v0.1.0",
-        "footer.license": "MITライセンス",
-        "footer.made_by": "作成者"
-      },
-      ko: {
-        "nav.title": "Hallucination Firewall",
-        "nav.features": "기능",
-        "nav.pipeline": "파이프라인",
-        "nav.integrations": "통합",
-        "nav.quickstart": "빠른 시작",
-        "hero.badge": "v0.1.0 — 오픈소스",
-        "hero.title": "AI 출력 타입 체커",
-        "hero.subtitle": "for AI Output",
-        "hero.description": "AI가 생성한 코드를 코드베이스에 적용하기 전에 검증. Python, JavaScript, TypeScript에서 환각 API, 잘못된 서명, 존재하지 않는 패키지 감지.",
-        "hero.cta_start": "시작하기",
-        "hero.cta_source": "소스 보기",
-        "hero.stats.layers": "검증 레이어",
-        "hero.stats.languages": "언어",
-        "hero.stats.tests": "테스트 통과",
-        "hero.stats.license": "라이선스",
-        "features.title": "필요한 모든 것",
-        "features.subtitle": "4개의 검증 레이어와 전체 개발 워크플로우를 위한 원활한 통합.",
-        "features.ast.title": "AST 구문 검증",
-        "features.ast.description": "Tree-sitter 파서가 Python, JavaScript, TypeScript의 잘못된 코드를 실행 전 감지.",
-        "features.import.title": "Import 검증",
-        "features.import.description": "모든 import를 PyPI 및 npm 레지스트리로 검증. 환각 패키지를 즉시 감지.",
-        "features.signature.title": "서명 검사",
-        "features.signature.description": "Jedi 기반 인트로스펙션이 함수 매개변수, 필수 인수, 키워드 인수를 실제 API로 검증.",
-        "features.parser.title": "LLM 출력 파서",
-        "features.parser.description": "ChatGPT/Claude 마크다운 응답에서 코드 블록을 추출하고 각 블록을 독립적으로 검증.",
-        "features.precommit.title": "Pre-commit 훅",
-        "features.precommit.description": "모든 git 커밋에서 자동 검증. 코드베이스에 들어가기 전 문제 감지. SQLite 캐시.",
-        "features.vscode.title": "VS Code 확장",
-        "features.vscode.description": "실시간 인라인 진단. 오류 물결 밑줄. 저장 시 또는 변경 시 트리거 구성 가능.",
-        "pipeline.title": "4층 검증 파이프라인",
-        "pipeline.subtitle": "각 레이어는 구문 오류부터 잘못된 함수 서명까지 다양한 AI 환각 범주를 감지.",
-        "pipeline.layer1.badge": "레이어 1",
-        "pipeline.layer1.title": "구문",
-        "pipeline.layer1.description": "tree-sitter AST 파싱이 잘못된 코드 감지",
-        "pipeline.layer2.badge": "레이어 2",
-        "pipeline.layer2.title": "Imports",
-        "pipeline.layer2.description": "PyPI & npm 레지스트리에서 패키지 존재 검증",
-        "pipeline.layer3.badge": "레이어 3",
-        "pipeline.layer3.title": "서명",
-        "pipeline.layer3.description": "실제 API 서명으로 함수 호출 검증",
-        "pipeline.layer4.badge": "레이어 4",
-        "pipeline.layer4.title": "사용 중단",
-        "pipeline.layer4.description": "대체 제안으로 사용 중단 패턴 플래그",
-        "integrations.title": "워크플로우에 맞춤",
-        "integrations.subtitle": "CLI, API 서버, pre-commit 훅, VS Code 확장 — 작업 방식대로 사용.",
-        "integrations.cli.title": "CLI",
-        "integrations.cli.badge": "기본",
-        "integrations.api.title": "REST API",
-        "integrations.api.badge": "FastAPI",
-        "integrations.precommit.title": "Pre-commit 훅",
-        "integrations.precommit.badge": "자동",
-        "integrations.vscode.title": "VS Code 확장",
-        "integrations.vscode.badge": "실시간",
-        "integrations.vscode.feature1": "물결 밑줄이 있는 인라인 진단",
-        "integrations.vscode.feature2": "구성 가능한 트리거: 저장 시 또는 변경 시",
-        "integrations.vscode.feature3": "검증 상태가 있는 상태 표시줄",
-        "integrations.vscode.feature4": "Python, JavaScript, TypeScript 지원",
-        "quickstart.title": "30초 만에 시작",
-        "cta.title": "오늘 AI 환각 중지",
-        "cta.subtitle": "오픈소스, MIT 라이선스, 설정 불필요. ChatGPT, Claude, Copilot 및 모든 LLM 출력과 작동.",
-        "cta.github": "GitHub에서 스타",
-        "cta.download": "v0.1.0 다운로드",
-        "footer.title": "AI Hallucination Firewall v0.1.0",
-        "footer.license": "MIT 라이선스",
-        "footer.made_by": "제작자"
-      }
-    };
-
-    // i18n function
-    function setLanguage(lang) {
-      const trans = translations[lang] || translations.en;
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (trans[key]) {
-          el.textContent = trans[key];
-        }
-      });
-      localStorage.setItem('lang', lang);
-      document.documentElement.setAttribute('lang', lang);
-    }
-
-    // Theme toggle
-    function setTheme(theme) {
-      if (theme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-        document.querySelector('.theme-icon-dark').style.display = 'none';
-        document.querySelector('.theme-icon-light').style.display = 'block';
-      } else {
-        document.documentElement.removeAttribute('data-theme');
-        document.querySelector('.theme-icon-dark').style.display = 'block';
-        document.querySelector('.theme-icon-light').style.display = 'none';
-      }
-      localStorage.setItem('theme', theme);
-      lucide.createIcons();
-    }
-
-    // Init theme
-    const savedTheme = localStorage.getItem('theme') ||
-      (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-    setTheme(savedTheme);
-
-    // Init language
-    const savedLang = localStorage.getItem('lang') || 'en';
-    document.getElementById('langSwitcher').value = savedLang;
-    setLanguage(savedLang);
-
-    // Theme toggle event
-    document.getElementById('themeToggle').addEventListener('click', () => {
-      const currentTheme = localStorage.getItem('theme') || 'dark';
-      setTheme(currentTheme === 'dark' ? 'light' : 'dark');
-    });
-
-    // Language switcher event
-    document.getElementById('langSwitcher').addEventListener('change', (e) => {
-      setLanguage(e.target.value);
-    });
-
-    // Mobile menu toggle
-    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
-      document.getElementById('mobileMenu').classList.toggle('active');
-    });
-
-    // Close mobile menu on link click
-    document.querySelectorAll('#mobileMenu a').forEach(link => {
-      link.addEventListener('click', () => {
-        document.getElementById('mobileMenu').classList.remove('active');
-      });
-    });
-
-    // Init Lucide icons
-    lucide.createIcons();
-
-    // Fade-in on scroll
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    );
-
-    document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
-  </script>
+  <!-- External JS -->
+  <script src="main.js" defer></script>
 </body>
 </html>
